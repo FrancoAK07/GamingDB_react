@@ -22,7 +22,7 @@ function EditReview({ reviewID, gameID }) {
 	}
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react-server.onrender.com/getreviewinfo", { params: { reviewID: reviewID } }).then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/getreviewinfo", { params: { reviewID: reviewID } }).then((data) => {
 			setDbRating(data.data[0].Game_Rating);
 			setPlatform(data.data[0].Platform);
 			reviewRef.current.value = data.data[0].Game_Review;
@@ -36,7 +36,7 @@ function EditReview({ reviewID, gameID }) {
 			alert("please complete the review");
 		} else {
 			axios
-				.put("https://gamingdb-react-server.onrender.com/updatereview", {
+				.put("https://gamingdb-react.onrender.com/updatereview", {
 					review: reviewRef.current.value,
 					rating: parseInt(dbRating),
 					platform: platform,

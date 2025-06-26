@@ -19,19 +19,19 @@ function ReviewCard() {
 	const userLogged = sessionStorage.getItem("logged");
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react-server.onrender.com/getlikes").then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/getlikes").then((data) => {
 			setLikes(data.data);
 		});
 	}, []);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react-server.onrender.com/getcomments").then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/getcomments").then((data) => {
 			setComments(data.data);
 		});
 	}, []);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react-server.onrender.com/getlastreviews").then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/getlastreviews").then((data) => {
 			setReviews(data.data);
 			setShowReadMoreOrLess(
 				data.data.map(() => {
@@ -84,25 +84,25 @@ function ReviewCard() {
 				});
 				if (alreadyLiked) {
 					axios
-						.delete("https://gamingdb-react-server.onrender.com/deletelike", {
+						.delete("https://gamingdb-react.onrender.com/deletelike", {
 							params: { userId: userId, reviewId: reviewId },
 						})
 						.then((data) => {
-							axios.get("https://gamingdb-react-server.onrender.com/getlikes").then((data) => {
+							axios.get("https://gamingdb-react.onrender.com/getlikes").then((data) => {
 								setLikes(data.data);
 								return;
 							});
 						});
 				} else {
-					axios.post("https://gamingdb-react-server.onrender.com/savelike", { userId: userId, reviewId: reviewId }).then(() => {
-						axios.get("https://gamingdb-react-server.onrender.com/getlikes").then((data) => {
+					axios.post("https://gamingdb-react.onrender.com/savelike", { userId: userId, reviewId: reviewId }).then(() => {
+						axios.get("https://gamingdb-react.onrender.com/getlikes").then((data) => {
 							setLikes(data.data);
 						});
 					});
 				}
 			} else {
-				axios.post("https://gamingdb-react-server.onrender.com/savelike", { userId: userId, reviewId: reviewId }).then(() => {
-					axios.get("https://gamingdb-react-server.onrender.com/getlikes").then((data) => {
+				axios.post("https://gamingdb-react.onrender.com/savelike", { userId: userId, reviewId: reviewId }).then(() => {
+					axios.get("https://gamingdb-react.onrender.com/getlikes").then((data) => {
 						setLikes(data.data);
 					});
 				});
@@ -199,7 +199,7 @@ function ReviewCard() {
 	const saveComment = (review) => {
 		if (commentRef.current[0].value) {
 			axios
-				.post("https://gamingdb-react-server.onrender.com/savecomment", {
+				.post("https://gamingdb-react.onrender.com/savecomment", {
 					userId: userId,
 					comment: commentRef.current[0].value,
 					reviewId: review.Review_ID,
@@ -210,7 +210,7 @@ function ReviewCard() {
 						style: { background: "#212529", color: "white", border: "1px solid gray" },
 						duration: 2000,
 					});
-					axios.get("https://gamingdb-react-server.onrender.com/getcomments").then((data) => {
+					axios.get("https://gamingdb-react.onrender.com/getcomments").then((data) => {
 						setComments(data.data);
 					});
 				});

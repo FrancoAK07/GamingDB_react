@@ -7,7 +7,7 @@ function List() {
 	const [listGames, setListGames] = useState([]);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react-server.onrender.com/getThisListGames", { params: { listId: listId } }).then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/getThisListGames", { params: { listId: listId } }).then((data) => {
 			setListGames(data.data);
 		});
 	}, [listId]);
@@ -15,16 +15,14 @@ function List() {
 	function deleteListGame(listId, gameId) {
 		if (window.confirm(`remove game from list ${listGames[0].List_Name}`)) {
 			axios
-				.delete("https://gamingdb-react-server.onrender.com/deleteListGame", {
+				.delete("https://gamingdb-react.onrender.com/deleteListGame", {
 					params: { listId: listId, gameId: gameId },
 				})
 				.then((data) => {
 					toast.success("game removed", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
-					axios
-						.get("https://gamingdb-react-server.onrender.com/getThisListGames", { params: { listId: listId } })
-						.then((data) => {
-							setListGames(data.data);
-						});
+					axios.get("https://gamingdb-react.onrender.com/getThisListGames", { params: { listId: listId } }).then((data) => {
+						setListGames(data.data);
+					});
 				});
 		}
 	}

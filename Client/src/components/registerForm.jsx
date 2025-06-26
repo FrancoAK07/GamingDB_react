@@ -37,7 +37,7 @@ function RegisterForm({ registerActive, setRegisterActive, onClickOutside, setAc
 			toast.error("please enter a valid email", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
 		} else {
 			axios
-				.post("https://gamingdb-react-server.onrender.com/insert", {
+				.post("https://gamingdb-react.onrender.com/insert", {
 					userName: userName,
 					userEmail: userEmail,
 					userPassword: userPassword,

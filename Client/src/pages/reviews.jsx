@@ -19,35 +19,33 @@ function Reviews({ getGameID, getID }) {
 	const commentRef = useRef([]);
 
 	useEffect(() => {
-		axios
-			.get("https://gamingdb-react-server.onrender.com/getmyreviews", { params: { userId: userIdRef.current } })
-			.then((data) => {
-				try {
-					setReviews(data.data);
-					setShowReadMoreOrLess(
-						data.data.map(() => {
-							return false;
-						})
-					);
-					setShowComments(
-						data.data.map(() => {
-							return false;
-						})
-					);
-				} catch (error) {
-					console.log(error);
-				}
-			});
+		axios.get("https://gamingdb-react.onrender.com/getmyreviews", { params: { userId: userIdRef.current } }).then((data) => {
+			try {
+				setReviews(data.data);
+				setShowReadMoreOrLess(
+					data.data.map(() => {
+						return false;
+					})
+				);
+				setShowComments(
+					data.data.map(() => {
+						return false;
+					})
+				);
+			} catch (error) {
+				console.log(error);
+			}
+		});
 	}, []);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react-server.onrender.com/getlikes").then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/getlikes").then((data) => {
 			setLikes(data.data);
 		});
 	}, []);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react-server.onrender.com/getcomments").then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/getcomments").then((data) => {
 			setComments(data.data);
 		});
 	}, []);
@@ -84,17 +82,15 @@ function Reviews({ getGameID, getID }) {
 
 	function deleteReview(reviewID) {
 		if (window.confirm("Delete review?")) {
-			axios.delete("https://gamingdb-react-server.onrender.com/deleteReview", { params: { reviewID: reviewID } }).then((data) => {
+			axios.delete("https://gamingdb-react.onrender.com/deleteReview", { params: { reviewID: reviewID } }).then((data) => {
 				toast.success("review deleted", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
-				axios
-					.get("https://gamingdb-react-server.onrender.com/getmyreviews", { params: { userId: userIdRef.current } })
-					.then((data) => {
-						try {
-							setReviews(data.data);
-						} catch (error) {
-							console.log(error);
-						}
-					});
+				axios.get("https://gamingdb-react.onrender.com/getmyreviews", { params: { userId: userIdRef.current } }).then((data) => {
+					try {
+						setReviews(data.data);
+					} catch (error) {
+						console.log(error);
+					}
+				});
 			});
 		}
 	}
@@ -137,35 +133,35 @@ function Reviews({ getGameID, getID }) {
 				});
 				if (alreadyLiked) {
 					axios
-						.delete("https://gamingdb-react-server.onrender.com/deletelike", {
+						.delete("https://gamingdb-react.onrender.com/deletelike", {
 							params: { userId: userIdRef.current, reviewId: reviewId },
 						})
 						.then((data) => {
-							axios.get("https://gamingdb-react-server.onrender.com/getlikes").then((data) => {
+							axios.get("https://gamingdb-react.onrender.com/getlikes").then((data) => {
 								setLikes(data.data);
 								return;
 							});
 						});
 				} else {
 					axios
-						.post("https://gamingdb-react-server.onrender.com/savelike", {
+						.post("https://gamingdb-react.onrender.com/savelike", {
 							userId: userIdRef.current,
 							reviewId: reviewId,
 						})
 						.then((data) => {
-							axios.get("https://gamingdb-react-server.onrender.com/getlikes").then((data) => {
+							axios.get("https://gamingdb-react.onrender.com/getlikes").then((data) => {
 								setLikes(data.data);
 							});
 						});
 				}
 			} else {
 				axios
-					.post("https://gamingdb-react-server.onrender.com/savelike", {
+					.post("https://gamingdb-react.onrender.com/savelike", {
 						userId: userIdRef.current,
 						reviewId: reviewId,
 					})
 					.then((data) => {
-						axios.get("https://gamingdb-react-server.onrender.com/getlikes").then((data) => {
+						axios.get("https://gamingdb-react.onrender.com/getlikes").then((data) => {
 							setLikes(data.data);
 						});
 					});
@@ -234,7 +230,7 @@ function Reviews({ getGameID, getID }) {
 	const saveComment = (review) => {
 		if (commentRef.current[0].value) {
 			axios
-				.post("https://gamingdb-react-server.onrender.com/savecomment", {
+				.post("https://gamingdb-react.onrender.com/savecomment", {
 					userId: userIdRef.current,
 					comment: commentRef.current[0].value,
 					reviewId: review.Review_ID,
@@ -245,7 +241,7 @@ function Reviews({ getGameID, getID }) {
 						style: { background: "#212529", color: "white", border: "1px solid gray" },
 						duration: 2000,
 					});
-					axios.get("https://gamingdb-react-server.onrender.com/getcomments").then((data) => {
+					axios.get("https://gamingdb-react.onrender.com/getcomments").then((data) => {
 						setComments(data.data);
 					});
 				});

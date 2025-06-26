@@ -9,7 +9,7 @@ function Home() {
 	const [imagesLoading, setImagesLoading] = useState([]);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react-server.onrender.com/getrecentgames").then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/getrecentgames").then((data) => {
 			setRecentGames(data.data);
 			let imagesArray = [];
 			data.data.forEach(() => {

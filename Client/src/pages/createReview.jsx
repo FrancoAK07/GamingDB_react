@@ -32,7 +32,7 @@ function CreateReview({ gameImg1, background1, gameID }) {
 			});
 		} else {
 			axios
-				.post("https://gamingdb-react-server.onrender.com/savereview", {
+				.post("https://gamingdb-react.onrender.com/savereview", {
 					review: reviewTextRef.current.value,
 					rating: parseInt(rating),
 					platform: platform,

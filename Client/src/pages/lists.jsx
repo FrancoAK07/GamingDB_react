@@ -17,17 +17,15 @@ function Lists() {
 	};
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react-server.onrender.com/getLists", { params: { userId: userIdRef.current } }).then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/getLists", { params: { userId: userIdRef.current } }).then((data) => {
 			setLists(data.data);
 		});
 	}, []);
 
 	useEffect(() => {
-		axios
-			.get("https://gamingdb-react-server.onrender.com/getListImg", { params: { userId: userIdRef.current } })
-			.then((result) => {
-				setListInfo(result.data);
-			});
+		axios.get("https://gamingdb-react.onrender.com/getListImg", { params: { userId: userIdRef.current } }).then((result) => {
+			setListInfo(result.data);
+		});
 	}, []);
 
 	useEffect(() => {
@@ -45,16 +43,14 @@ function Lists() {
 	const createList = () => {
 		if (listNameRef.current.value) {
 			axios
-				.post("https://gamingdb-react-server.onrender.com/createList", {
+				.post("https://gamingdb-react.onrender.com/createList", {
 					listName: listNameRef.current.value,
 					userId: userIdRef.current,
 				})
 				.then((res) => {
-					axios
-						.get("https://gamingdb-react-server.onrender.com/getLists", { params: { userId: userIdRef.current } })
-						.then((data) => {
-							setLists(data.data);
-						});
+					axios.get("https://gamingdb-react.onrender.com/getLists", { params: { userId: userIdRef.current } }).then((data) => {
+						setLists(data.data);
+					});
 				});
 			formRef.current.classList.add("d-none");
 		} else {
@@ -82,13 +78,11 @@ function Lists() {
 
 	function deleteList(listId) {
 		if (window.confirm("delete list?")) {
-			axios.delete("https://gamingdb-react-server.onrender.com/deleteList", { params: { listId: listId } }).then((data) => {
+			axios.delete("https://gamingdb-react.onrender.com/deleteList", { params: { listId: listId } }).then((data) => {
 				toast.success("list deleted", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
-				axios
-					.get("https://gamingdb-react-server.onrender.com/getLists", { params: { userId: userIdRef.current } })
-					.then((data) => {
-						setLists(data.data);
-					});
+				axios.get("https://gamingdb-react.onrender.com/getLists", { params: { userId: userIdRef.current } }).then((data) => {
+					setLists(data.data);
+				});
 			});
 		}
 	}

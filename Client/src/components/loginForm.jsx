@@ -26,7 +26,7 @@ function LoginForm({ active, setActive, onClickOutside, setUserLogged, setRegist
 	}, [onClickOutside, active]);
 
 	const logIn = async () => {
-		const data = await axios.get("https://gamingdb-react-server.onrender.com/get");
+		const data = await axios.get("https://gamingdb-react.onrender.com/get");
 		for (let i = 0; i < data.data.length; i++) {
 			if (emailRef.current.value === data.data[i].Email && passwordRef.current.value === data.data[i].Password) {
 				sessionStorage.setItem("userId", data.data[i].User_Id);
