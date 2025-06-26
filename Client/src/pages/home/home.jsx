@@ -30,8 +30,6 @@ function Home() {
 		});
 	}, []);
 
-	console.log("hello");
-
 	function handleImageLoading(index) {
 		setImagesLoading((prevImages) => {
 			let newImages = [...prevImages];
