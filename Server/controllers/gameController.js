@@ -7,7 +7,7 @@ export async function getAllGames(req, res) {
 		const games = await Game.findAll();
 		res.status(200).json(games);
 	} catch (error) {
-		console.error("Error fetching users:", error);
+		console.error("Error:", error);
 		res.status(500).json({ message: "Internal Server Error" });
 	}
 }
@@ -19,7 +19,7 @@ export async function getRecentGames(req, res) {
 		});
 		res.status(200).json(recentGames);
 	} catch (error) {
-		console.error("Error fetching users:", error);
+		console.error("Error:", error);
 		res.status(500).json({ message: "Internal Server Error" });
 	}
 }
