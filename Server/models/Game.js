@@ -1,20 +1,20 @@
 import { Model, DataTypes } from "sequelize";
 import sequelize from "./index.js";
 
-class User extends Model {}
+class Game extends Model {}
 
-User.init(
+Game.init(
 	{
-		User_Id: {
+		Game_ID: {
 			type: DataTypes.INTEGER,
 			primaryKey: true,
 			autoIncrement: true,
 		},
-		User_Name: {
+		Game_Title: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		Email: {
+		Game_Img: {
 			type: DataTypes.STRING,
 			allowNull: false,
 			unique: true,
@@ -22,17 +22,17 @@ User.init(
 				isEmail: true,
 			},
 		},
-		Password: {
+		Game_Background: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
 	},
 	{
 		sequelize,
-		modelName: "User",
-		tableName: "Users",
+		modelName: "Game",
+		tableName: "Games",
 		timestamps: false,
 	}
 );
 
-export default User;
+export default Game;

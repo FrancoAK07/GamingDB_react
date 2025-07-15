@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import { config } from "dotenv";
-import { userRoutes } from "./routes/userRoutes.js";
+import routes from "./routes/index.js";
 import sequelize from "./models/index.js";
 
 config();
@@ -21,7 +21,9 @@ app.use(
 	})
 );
 app.use(express.json({ limit: "5mb" }));
-app.use("/api", userRoutes); // Add this line to use user routes
+app.use("/", routes); // Add this line to use routes
+
+console.log(sequelize);
 
 // Test the connection
 sequelize
