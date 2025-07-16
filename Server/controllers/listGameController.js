@@ -1,6 +1,6 @@
 import sequelize from "../models/index.js";
 import { QueryTypes } from "sequelize";
-import ListGame from "../models/listGame.js";
+import ListGame from "../models/ListGame.js";
 
 export const getListGames = async (req, res) => {
 	try {
