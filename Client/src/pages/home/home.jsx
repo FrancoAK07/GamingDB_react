@@ -9,7 +9,7 @@ function Home() {
 	const [imagesLoading, setImagesLoading] = useState([]);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/getrecentgames").then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/game/recent").then((data) => {
 			setRecentGames(data.data);
 			let imagesArray = [];
 			data.data.forEach(() => {
@@ -68,7 +68,7 @@ function Home() {
 								{!recentGames.length ? (
 									<div className="row w-100 m-auto justify-content-center">
 										<div className="spinner-border text-primary" role="status">
-											<span class="visually-hidden">Loading...</span>
+											<span className="visually-hidden">Loading...</span>
 										</div>
 									</div>
 								) : null}
