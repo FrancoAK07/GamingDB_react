@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -11,9 +11,6 @@ function RegisterForm({ registerActive, setRegisterActive, onClickOutside, setAc
 	const registerNameInput = useRef(null);
 	const registerEmailInput = useRef(null);
 	const registerPasswordInput = useRef(null);
-	const [userName, setUserName] = useState("");
-	const [userEmail, setUserEmail] = useState("");
-	const [userPassword, setUserPassword] = useState("");
 
 	useEffect(() => {
 		const handleClickOutside = (e) => {
@@ -30,24 +27,45 @@ function RegisterForm({ registerActive, setRegisterActive, onClickOutside, setAc
 		};
 	}, [registerActive, onClickOutside]);
 
-	const registerUser = () => {
-		if (!userName || !userEmail || !userPassword) {
-			toast.error("please fill all fields", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
-		} else if (!userEmail.includes("@")) {
-			toast.error("please enter a valid email", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
+	const handleSubmit = async (event) => {
+		event.preventDefault();
+		const formData = new FormData(event.target);
+		const name = formData.get("name");
+		const email = formData.get("email");
+		const password = formData.get("password");
+		if (!name | !email || !password) {
+			toast.error("Please enter your account info", {
+				style: { background: "#212529", color: "white", border: "1px solid gray" },
+			});
 		} else {
-			axios
-				.post("https://gamingdb-react.onrender.com/insert", {
-					userName: userName,
-					userEmail: userEmail,
-					userPassword: userPassword,
-				})
-				.then(
-					setRegisterActive(false),
-					toast.success("registered successfully!", {
-						style: { background: "#212529", color: "white", border: "1px solid gray" },
-					})
-				);
+			await handleRegister(name, email, password);
+		}
+	};
+
+	const handleRegister = async (userName, userEmail, userPassword) => {
+		try {
+			const registerData = await axios.post("https://gamingdb-react.onrender.com/user", {
+				userName: userName,
+				userEmail: userEmail,
+				userPassword: userPassword,
+			});
+			if (registerData.status === 200) {
+				setRegisterActive(false);
+				toast.success("registered successfully!", {
+					style: { background: "#212529", color: "white", border: "1px solid gray" },
+				});
+				registerNameInput.current.value = "";
+				registerEmailInput.current.value = "";
+				registerPasswordInput.current.value = "";
+			} else {
+				toast.error("Error, try again", {
+					style: { background: "#212529", color: "white", border: "1px solid gray" },
+				});
+			}
+		} catch (error) {
+			console.error("Error:", error);
+			const errorMessage = error.response ? error.response.data : "Network error. Please try again.";
+			toast.error(errorMessage, { style: { background: "#212529", color: "white", border: "1px solid gray" } });
 		}
 	};
 
@@ -58,20 +76,18 @@ function RegisterForm({ registerActive, setRegisterActive, onClickOutside, setAc
 	}
 
 	return (
-		<form className={registerActive ? visible : invisible} ref={ref}>
+		<form className={registerActive ? visible : invisible} ref={ref} onSubmit={handleSubmit}>
 			<div className="row w-100 m-auto mb-2">
 				<label className="text-white ps-1" htmlFor="register-name-input">
 					User Name
 				</label>
 				<input
 					className="form-control"
+					name="name"
 					type="text"
 					id="register-name-input"
 					ref={registerNameInput}
 					placeholder="Name"
-					onChange={(e) => {
-						setUserName(e.target.value);
-					}}
 				/>
 			</div>
 
@@ -81,13 +97,11 @@ function RegisterForm({ registerActive, setRegisterActive, onClickOutside, setAc
 				</label>
 				<input
 					className="form-control"
+					name="email"
 					type="text"
 					id="register-email-input"
 					ref={registerEmailInput}
 					placeholder="Email"
-					onChange={(e) => {
-						setUserEmail(e.target.value);
-					}}
 				/>
 			</div>
 
@@ -97,18 +111,16 @@ function RegisterForm({ registerActive, setRegisterActive, onClickOutside, setAc
 				</label>
 				<input
 					className="form-control"
+					name="password"
 					type="text"
 					id="register-password-input"
 					placeholder="Enter Password"
 					ref={registerPasswordInput}
-					onChange={(e) => {
-						setUserPassword(e.target.value);
-					}}
 				/>
 			</div>
 
 			<div className="row w-100 m-auto justify-content-center">
-				<button className="btn btn-secondary w-50 bg-primary" type="button" onClick={registerUser}>
+				<button className="btn btn-secondary w-50 bg-primary" type="submit">
 					Register
 				</button>
 			</div>

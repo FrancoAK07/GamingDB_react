@@ -11,19 +11,21 @@ function Lists() {
 	const [listInfo, setListInfo] = useState([]);
 	let lastThreeListInfo = [];
 	const createListBtnRef = useRef();
+	const [loading, setLoading] = useState(true);
 
 	const showForm = () => {
 		formRef.current.classList.toggle("d-none");
 	};
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/getLists", { params: { userId: userIdRef.current } }).then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/list/myLists", { params: { userId: userIdRef.current } }).then((data) => {
 			setLists(data.data);
+			setLoading(false);
 		});
 	}, []);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/getListImg", { params: { userId: userIdRef.current } }).then((result) => {
+		axios.get("https://gamingdb-react.onrender.com/list/listImage", { params: { userId: userIdRef.current } }).then((result) => {
 			setListInfo(result.data);
 		});
 	}, []);
@@ -43,14 +45,16 @@ function Lists() {
 	const createList = () => {
 		if (listNameRef.current.value) {
 			axios
-				.post("https://gamingdb-react.onrender.com/createList", {
+				.post("https://gamingdb-react.onrender.com/list/create", {
 					listName: listNameRef.current.value,
 					userId: userIdRef.current,
 				})
 				.then((res) => {
-					axios.get("https://gamingdb-react.onrender.com/getLists", { params: { userId: userIdRef.current } }).then((data) => {
-						setLists(data.data);
-					});
+					axios
+						.get("https://gamingdb-react.onrender.com/list/myLists", { params: { userId: userIdRef.current } })
+						.then((data) => {
+							setLists(data.data);
+						});
 				});
 			formRef.current.classList.add("d-none");
 		} else {
@@ -78,9 +82,9 @@ function Lists() {
 
 	function deleteList(listId) {
 		if (window.confirm("delete list?")) {
-			axios.delete("https://gamingdb-react.onrender.com/deleteList", { params: { listId: listId } }).then((data) => {
+			axios.delete("https://gamingdb-react.onrender.com/list", { params: { listId: listId } }).then((data) => {
 				toast.success("list deleted", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
-				axios.get("https://gamingdb-react.onrender.com/getLists", { params: { userId: userIdRef.current } }).then((data) => {
+				axios.get("https://gamingdb-react.onrender.com/list/myLists", { params: { userId: userIdRef.current } }).then((data) => {
 					setLists(data.data);
 				});
 			});
@@ -95,10 +99,10 @@ function Lists() {
 					Create List
 				</button>
 			</div>
-			{!lists.length ? (
+			{loading ? (
 				<div className="row w-75 m-auto justify-content-center position-absolute top-50 start-50 translate-middle">
 					<div className="spinner-border text-primary" role="status">
-						<span class="visually-hidden">Loading...</span>
+						<span className="visually-hidden">Loading...</span>
 					</div>
 				</div>
 			) : null}

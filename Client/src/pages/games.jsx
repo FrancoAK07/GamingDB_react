@@ -20,7 +20,7 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 	const [options, setOptions] = useState([]);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/getgames").then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/game/getAll").then((data) => {
 			setGames(data.data);
 			setOptions(
 				data.data.map(() => {
@@ -31,19 +31,23 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 	}, []);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/getmyreviews", { params: { userId: userId } }).then((userReviews) => {
-			setReviews(userReviews.data);
-		});
+		if (userId) {
+			axios.get("https://gamingdb-react.onrender.com/review/myReviews", { params: { userId: userId } }).then((userReviews) => {
+				setReviews(userReviews.data);
+			});
+		}
 	}, [userId]);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/getLists", { params: { userId: userId } }).then((lists) => {
-			setUserLists(lists.data);
-		});
+		if (userId) {
+			axios.get("https://gamingdb-react.onrender.com/list/myLists", { params: { userId: userId } }).then((lists) => {
+				setUserLists(lists.data);
+			});
+		}
 	}, [userId]);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/getListGames").then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/listGames/all").then((data) => {
 			setListGames(data.data);
 		});
 	}, []);
@@ -107,7 +111,7 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 			let alreadyInList = listGames.some((item) => item.List_Id === id && item.Game_Id === gameid.current);
 
 			if (!alreadyInList) {
-				axios.post("https://gamingdb-react.onrender.com/addTolist", { listId: id, gameId: gameid.current }).then((result) => {});
+				axios.post("https://gamingdb-react.onrender.com/list/add", { listId: id, gameId: gameid.current }).then((result) => {});
 				toast.success("Added successfully", {
 					style: {
 						background: "#212529",
@@ -167,7 +171,7 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 			{!games.length ? (
 				<div className="row w-75 m-auto justify-content-center position-absolute top-50 start-50 translate-middle">
 					<div className="spinner-border text-primary" role="status">
-						<span class="visually-hidden">Loading...</span>
+						<span className="visually-hidden">Loading...</span>
 					</div>
 				</div>
 			) : null}

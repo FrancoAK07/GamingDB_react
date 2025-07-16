@@ -32,7 +32,7 @@ function CreateReview({ gameImg1, background1, gameID }) {
 			});
 		} else {
 			axios
-				.post("https://gamingdb-react.onrender.com/savereview", {
+				.post("https://gamingdb-react.onrender.com/review", {
 					review: reviewTextRef.current.value,
 					rating: parseInt(rating),
 					platform: platform,
@@ -40,7 +40,7 @@ function CreateReview({ gameImg1, background1, gameID }) {
 					gameid: gameID,
 					userId: userId.current,
 				})
-				.then((data) => {
+				.then(() => {
 					toast.success("review created!", {
 						style: {
 							background: "#212529",

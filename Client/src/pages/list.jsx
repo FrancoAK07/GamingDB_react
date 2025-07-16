@@ -5,22 +5,24 @@ import toast from "react-hot-toast";
 function List() {
 	const listId = sessionStorage.getItem("listId");
 	const [listGames, setListGames] = useState([]);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/getThisListGames", { params: { listId: listId } }).then((data) => {
+		axios.get("https://gamingdb-react.onrender.com/listGames/games", { params: { listId: listId } }).then((data) => {
 			setListGames(data.data);
+			setLoading(false);
 		});
 	}, [listId]);
 
 	function deleteListGame(listId, gameId) {
 		if (window.confirm(`remove game from list ${listGames[0].List_Name}`)) {
 			axios
-				.delete("https://gamingdb-react.onrender.com/deleteListGame", {
+				.delete("https://gamingdb-react.onrender.com/listGames", {
 					params: { listId: listId, gameId: gameId },
 				})
-				.then((data) => {
+				.then(() => {
 					toast.success("game removed", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
-					axios.get("https://gamingdb-react.onrender.com/getThisListGames", { params: { listId: listId } }).then((data) => {
+					axios.get("https://gamingdb-react.onrender.com/listGames/games", { params: { listId: listId } }).then((data) => {
 						setListGames(data.data);
 					});
 				});
@@ -32,10 +34,10 @@ function List() {
 				<h1 className="text-white mt-2">{listGames[0]?.List_Name}</h1>
 			</div>
 
-			{!listGames.length ? (
+			{loading ? (
 				<div className="row w-75 m-auto justify-content-center position-absolute top-50 start-50 translate-middle">
 					<div className="spinner-border text-primary" role="status">
-						<span class="visually-hidden">Loading...</span>
+						<span className="visually-hidden">Loading...</span>
 					</div>
 				</div>
 			) : null}
