@@ -15,9 +15,15 @@ export const getListGames = async (req, res) => {
 export const getThisListGames = async (req, res) => {
 	const { listId } = req.query;
 	try {
-		const listGames = await ListGame.findAll({
-			where: { List_Id: listId },
-		});
+		const listGames = await sequelize.query(
+			`SELECT "Lists"."List_Id", "Lists"."List_Name", "Games"."Game_Img", "Games"."Game_ID", "Games"."Game_Title"
+			FROM "Lists" JOIN "ListGames" ON "Lists"."List_Id" = "ListGames"."List_Id" JOIN "Games"
+			ON "ListGames"."Game_Id" = "Games"."Game_ID" WHERE "Lists"."List_Id" = :ListId`,
+			{
+				replacements: { ListId: listId },
+				type: QueryTypes.SELECT,
+			}
+		);
 		res.status(200).json(listGames);
 	} catch (error) {
 		console.error("Error:", error);
