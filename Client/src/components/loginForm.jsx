@@ -46,6 +46,32 @@ function LoginForm({ active, setActive, onClickOutside, setUserLogged, setRegist
 		}
 	};
 
+	const logIn2 = async (userEmail, userPassword) => {
+		try {
+			const loginData = await axios.post("https://gamingdb-react.onrender.com/user/login", {
+				userEmail: userEmail,
+				userPassword: userPassword,
+			});
+			console.log(loginData);
+			if (loginData.userId) {
+				sessionStorage.setItem("userId", loginData.userId);
+				userName(loginData.userName);
+				getUserId(loginData.userId);
+				setUserLogged(true);
+				setActive(false);
+				sessionStorage.setItem("logged", true);
+				sessionStorage.setItem("user", loginData.userName);
+				toast.success(`Logged in successfully!\n Hi ${sessionStorage.getItem("user")}!`, {
+					style: { background: "#212529", color: "white", border: "1px solid gray" },
+				});
+			} else {
+				toast.error(loginData, { style: { background: "#212529", color: "white", border: "1px solid gray" } });
+			}
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
+
 	function registerLink(e) {
 		e.preventDefault();
 		setActive(false);
@@ -74,7 +100,7 @@ function LoginForm({ active, setActive, onClickOutside, setUserLogged, setRegist
 					/>
 				</div>
 				<div className="row w-100 m-auto justify-content-center">
-					<button type="button" className="btn btn-secondary w-50 bg-primary" onClick={logIn}>
+					<button type="button" className="btn btn-secondary w-50 bg-primary" onClick={logIn2}>
 						Log In
 					</button>
 				</div>

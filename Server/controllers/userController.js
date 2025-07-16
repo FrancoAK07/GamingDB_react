@@ -33,7 +33,7 @@ export const loginUser = async (req, res) => {
 		}
 		const matchPasswords = await verifyPassword(userPassword, user.Password);
 		if (matchPasswords) {
-			const userResponse = { Id: user.User_Id, name: user.User_Name, email: user.Email };
+			const userResponse = { userId: user.User_Id, userName: user.User_Name };
 			res.status(200).json(userResponse);
 		} else {
 			res.status(401).json("Invalid password");
