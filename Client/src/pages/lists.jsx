@@ -49,7 +49,7 @@ function Lists() {
 					listName: listNameRef.current.value,
 					userId: userIdRef.current,
 				})
-				.then((res) => {
+				.then(() => {
 					axios
 						.get("https://gamingdb-react.onrender.com/list/myLists", { params: { userId: userIdRef.current } })
 						.then((data) => {
