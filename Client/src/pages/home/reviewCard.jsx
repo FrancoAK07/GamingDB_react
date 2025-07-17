@@ -76,42 +76,49 @@ function ReviewCard() {
 		}
 	}
 
-	function saveLike(userId, reviewId) {
-		if (userId) {
-			if (likes.length) {
-				let alreadyLiked = likes.find((like) => {
-					return parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId);
-				});
-				if (alreadyLiked) {
-					axios
-						.delete("https://gamingdb-react.onrender.com/likes", {
-							params: { userId: userId, reviewId: reviewId },
-						})
-						.then((data) => {
-							axios.get("https://gamingdb-react.onrender.com/likes").then((data) => {
-								setLikes(data.data);
-								return;
-							});
+	async function saveLike2(userId, reviewId) {
+		console.log(userId, reviewId);
+		if (!userId) {
+			toast.error("Please enter your account info", {
+				style: { background: "#212529", color: "white", border: "1px solid gray" },
+			});
+			return;
+		} else {
+			const alreadyLiked = likes.some(
+				(like) => parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId)
+			);
+
+			if (alreadyLiked) {
+				setLikes((prevLikes) =>
+					prevLikes.filter(
+						(like) => !(parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId))
+					)
+				);
+				await axios
+					.delete("https://gamingdb-react.onrender.com/likes", {
+						params: { userId: userId, reviewId: reviewId },
+					})
+					.catch((error) => {
+						console.error("Error removing like:", error);
+						toast.error("Error removing like", {
+							style: { background: "#212529", color: "white", border: "1px solid gray" },
 						});
-				} else {
-					axios.post("https://gamingdb-react.onrender.com/likes", { userId: userId, reviewId: reviewId }).then(() => {
-						axios.get("https://gamingdb-react.onrender.com/likes").then((data) => {
-							setLikes(data.data);
-						});
+						setLikes((prevLikes) => [...prevLikes, { User_Id: userId, Review_Id: reviewId }]);
 					});
-				}
 			} else {
-				axios.post("https://gamingdb-react.onrender.com/likes", { userId: userId, reviewId: reviewId }).then(() => {
-					axios.get("https://gamingdb-react.onrender.com/likes").then((data) => {
-						setLikes(data.data);
+				setLikes((prevLikes) => [...prevLikes, { User_Id: userId, Review_Id: reviewId }]);
+				await axios.post("https://gamingdb-react.onrender.com/likes", { userId: userId, reviewId: reviewId }).catch((error) => {
+					console.error("Error adding like:", error);
+					toast.error("Error adding like", {
+						style: { background: "#212529", color: "white", border: "1px solid gray" },
 					});
+					setLikes((prevLikes) =>
+						prevLikes.filter(
+							(like) => !(parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId))
+						)
+					);
 				});
 			}
-		} else {
-			toast("Sign in to like a review", {
-				style: { background: "#212529", color: "white", border: "1px solid gray" },
-				duration: 2000,
-			});
 		}
 	}
 
@@ -268,7 +275,7 @@ function ReviewCard() {
 										<button
 											className="like-btn btn rounded text-white border-0"
 											onClick={() => {
-												saveLike(userId, review.Review_ID);
+												saveLike2(userId, review.Review_ID);
 											}}>
 											{checkIfLiked(review, index)}
 										</button>

@@ -17,6 +17,7 @@ function Reviews({ getGameID, getID }) {
 	const [comments, setComments] = useState([]);
 	const userLogged = sessionStorage.getItem("logged");
 	const commentRef = useRef([]);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		axios.get("https://gamingdb-react.onrender.com/review/myReviews", { params: { userId: userIdRef.current } }).then((data) => {
@@ -32,6 +33,7 @@ function Reviews({ getGameID, getID }) {
 						return false;
 					})
 				);
+				setLoading(false);
 			} catch (error) {
 				console.log(error);
 			}
@@ -127,52 +129,49 @@ function Reviews({ getGameID, getID }) {
 		);
 	}
 
-	function saveLike(userId, reviewId) {
-		if (userIdRef.current) {
-			if (likes.length) {
-				let alreadyLiked = likes.find((like) => {
-					return parseInt(like.User_Id) === parseInt(userIdRef.current) && parseInt(like.Review_Id) === parseInt(reviewId);
-				});
-				if (alreadyLiked) {
-					axios
-						.delete("https://gamingdb-react.onrender.com/likes", {
-							params: { userId: userIdRef.current, reviewId: reviewId },
-						})
-						.then((data) => {
-							axios.get("https://gamingdb-react.onrender.com/likes").then((data) => {
-								setLikes(data.data);
-								return;
-							});
-						});
-				} else {
-					axios
-						.post("https://gamingdb-react.onrender.com/likes", {
-							userId: userIdRef.current,
-							reviewId: reviewId,
-						})
-						.then(() => {
-							axios.get("https://gamingdb-react.onrender.com/likes").then((data) => {
-								setLikes(data.data);
-							});
-						});
-				}
-			} else {
-				axios
-					.post("https://gamingdb-react.onrender.com/likes", {
-						userId: userIdRef.current,
-						reviewId: reviewId,
-					})
-					.then(() => {
-						axios.get("https://gamingdb-react.onrender.com/likes").then((data) => {
-							setLikes(data.data);
-						});
-					});
-			}
-		} else {
-			toast("Sign in to like a review", {
+	async function saveLike2(userId, reviewId) {
+		console.log(userId, reviewId);
+		if (!userId) {
+			toast.error("Please enter your account info", {
 				style: { background: "#212529", color: "white", border: "1px solid gray" },
-				duration: 2000,
 			});
+			return;
+		} else {
+			const alreadyLiked = likes.some(
+				(like) => parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId)
+			);
+
+			if (alreadyLiked) {
+				setLikes((prevLikes) =>
+					prevLikes.filter(
+						(like) => !(parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId))
+					)
+				);
+				await axios
+					.delete("https://gamingdb-react.onrender.com/likes", {
+						params: { userId: userId, reviewId: reviewId },
+					})
+					.catch((error) => {
+						console.error("Error removing like:", error);
+						toast.error("Error removing like", {
+							style: { background: "#212529", color: "white", border: "1px solid gray" },
+						});
+						setLikes((prevLikes) => [...prevLikes, { User_Id: userId, Review_Id: reviewId }]);
+					});
+			} else {
+				setLikes((prevLikes) => [...prevLikes, { User_Id: userId, Review_Id: reviewId }]);
+				await axios.post("https://gamingdb-react.onrender.com/likes", { userId: userId, reviewId: reviewId }).catch((error) => {
+					console.error("Error adding like:", error);
+					toast.error("Error adding like", {
+						style: { background: "#212529", color: "white", border: "1px solid gray" },
+					});
+					setLikes((prevLikes) =>
+						prevLikes.filter(
+							(like) => !(parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId))
+						)
+					);
+				});
+			}
 		}
 	}
 
@@ -258,7 +257,7 @@ function Reviews({ getGameID, getID }) {
 	return (
 		<div className="review-card container mb-4 ">
 			<h1 className="mb-3 text-white text-center mt-2">My Reviews</h1>
-			{!reviews.length ? (
+			{loading ? (
 				<div className="row w-75 m-auto justify-content-center position-absolute top-50 start-50 translate-middle">
 					<div className="spinner-border text-primary" role="status">
 						<span className="visually-hidden">Loading...</span>
@@ -322,7 +321,7 @@ function Reviews({ getGameID, getID }) {
 										<button
 											className="like-btn btn rounded text-white border-0"
 											onClick={() => {
-												saveLike(userIdRef.current, review.Review_ID);
+												saveLike2(userIdRef.current, review.Review_ID);
 											}}>
 											{checkIfLiked(review, index)}
 										</button>
