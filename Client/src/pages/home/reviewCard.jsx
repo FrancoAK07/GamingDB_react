@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { FaStar } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { saveLike2 } from "../../utils/helpers.js";
 
 function ReviewCard() {
 	const [reviews, setReviews] = useState([]);
@@ -13,6 +14,7 @@ function ReviewCard() {
 	const [likes, setLikes] = useState([]);
 	const [comments, setComments] = useState([]);
 	const userId = sessionStorage.getItem("userId");
+	const user = sessionStorage.getItem("user");
 	let reviewsLikes = [];
 	let reviewsComments = [];
 	const [showComments, setShowComments] = useState([]);
@@ -73,52 +75,6 @@ function ReviewCard() {
 			isExpandedCopy[index] = true;
 			setIsExpanded(isExpandedCopy);
 			e.target.innerHTML = "Read Less";
-		}
-	}
-
-	async function saveLike2(userId, reviewId) {
-		console.log(userId, reviewId);
-		if (!userId) {
-			toast.error("Log in to like a comment", {
-				style: { background: "#212529", color: "white", border: "1px solid gray" },
-			});
-			return;
-		} else {
-			const alreadyLiked = likes.some(
-				(like) => parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId)
-			);
-
-			if (alreadyLiked) {
-				setLikes((prevLikes) =>
-					prevLikes.filter(
-						(like) => !(parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId))
-					)
-				);
-				await axios
-					.delete("https://gamingdb-react.onrender.com/likes", {
-						params: { userId: userId, reviewId: reviewId },
-					})
-					.catch((error) => {
-						console.error("Error removing like:", error);
-						toast.error("Error removing like", {
-							style: { background: "#212529", color: "white", border: "1px solid gray" },
-						});
-						setLikes((prevLikes) => [...prevLikes, { User_Id: userId, Review_Id: reviewId }]);
-					});
-			} else {
-				setLikes((prevLikes) => [...prevLikes, { User_Id: userId, Review_Id: reviewId }]);
-				await axios.post("https://gamingdb-react.onrender.com/likes", { userId: userId, reviewId: reviewId }).catch((error) => {
-					console.error("Error adding like:", error);
-					toast.error("Error adding like", {
-						style: { background: "#212529", color: "white", border: "1px solid gray" },
-					});
-					setLikes((prevLikes) =>
-						prevLikes.filter(
-							(like) => !(parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId))
-						)
-					);
-				});
-			}
 		}
 	}
 
@@ -190,37 +146,43 @@ function ReviewCard() {
 
 	function displayComment(review) {
 		let matchingComments = [];
-		for (let comment of comments) {
+
+		comments.forEach((comment, index) => {
 			if (parseInt(review.Review_ID) === parseInt(comment.Review_Id)) {
 				matchingComments.push(
-					<div className="col-12 p-2 border border-1 border-secondary rounded-2 mb-2 text-white">
+					<div className="col-12 p-2 border border-1 border-secondary rounded-2 mb-2 text-white" key={index}>
 						<div className="row w-100 m-auto">{comment.User_Name}</div>
-						<div className="row w-100 m-auto ms-2">{comment.Comment}</div>
+						<div className="row w-100 m-auto ms-2">{comment.Comment_Text}</div>
 					</div>
 				);
 			}
-		}
+		});
 		return matchingComments;
 	}
 
-	const saveComment = (review) => {
+	const saveComment2 = async (review) => {
 		if (commentRef.current[0].value) {
-			axios
-				.post("https://gamingdb-react.onrender.com/comment", {
+			const commentsCopy = comments.slice();
+			const commentText = commentRef.current[0].value;
+			commentRef.current[0].value = "";
+			setComments((prevComments) => [
+				...prevComments,
+				{ Comment_Text: commentText, User_Id: userId, Review_Id: review.Review_ID, User_Name: user },
+			]);
+
+			try {
+				await axios.post("https://gamingdb-react.onrender.com/comment", {
 					userId: userId,
-					comment: commentRef.current[0].value,
+					comment: commentText,
 					reviewId: review.Review_ID,
-				})
-				.then(() => {
-					commentRef.current[0].value = "";
-					toast("Comment Added!!", {
-						style: { background: "#212529", color: "white", border: "1px solid gray" },
-						duration: 2000,
-					});
-					axios.get("https://gamingdb-react.onrender.com/comment").then((data) => {
-						setComments(data.data);
-					});
 				});
+			} catch (error) {
+				console.error("Error posting comment:", error);
+				toast.error("Error posting comment", {
+					style: { background: "#212529", color: "white", border: "1px solid gray" },
+				});
+				setComments(commentsCopy);
+			}
 		} else {
 			toast("Can't add empty comment", {
 				style: { background: "#212529", color: "white", border: "1px solid gray" },
@@ -254,7 +216,9 @@ function ReviewCard() {
 								<div className="row mt-2 justify-content-start w-100 m-auto">
 									<div className="rating1 col p-0">
 										{[...Array(5)].map((star, i) => {
-											return <FaStar color={review.Game_Rating >= i + 1 ? "#ffc107" : "#e4e5e9"} key={i} />;
+											return (
+												<FaStar color={review.Game_Rating >= i + 1 ? "#ffc107" : "#e4e5e9"} key={`${review.Review_ID}-${i}`} />
+											);
 										})}
 									</div>
 								</div>
@@ -275,7 +239,7 @@ function ReviewCard() {
 										<button
 											className="like-btn btn rounded text-white border-0"
 											onClick={() => {
-												saveLike2(userId, review.Review_ID);
+												saveLike2(userId, review.Review_ID, likes, setLikes);
 											}}>
 											{checkIfLiked(review, index)}
 										</button>
@@ -305,7 +269,7 @@ function ReviewCard() {
 											cols="5"
 											ref={(item) => checkCommentRef(item, index)}
 											placeholder="Your comment here..."></textarea>
-										<button className="d-block btn btn-primary mb-4" onClick={() => saveComment(review)}>
+										<button className="d-block btn btn-primary mb-4" onClick={() => saveComment2(review)}>
 											Save Comment
 										</button>
 									</div>

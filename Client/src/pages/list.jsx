@@ -14,20 +14,23 @@ function List() {
 		});
 	}, [listId]);
 
-	function deleteListGame(listId, gameId) {
+	const deleteListGame2 = async (listId, gameId) => {
 		if (window.confirm(`remove game from list ${listGames[0].List_Name}`)) {
-			axios
-				.delete("https://gamingdb-react.onrender.com/listGames", {
+			const listGamesCopy = listGames.slice();
+			setListGames((prevListGames) => prevListGames.filter((game) => game.Game_ID !== gameId));
+			try {
+				await axios.delete("https://gamingdb-react.onrender.com/listGames", {
 					params: { listId: listId, gameId: gameId },
-				})
-				.then(() => {
-					toast.success("game removed", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
-					axios.get("https://gamingdb-react.onrender.com/listGames/games", { params: { listId: listId } }).then((data) => {
-						setListGames(data.data);
-					});
 				});
+			} catch (error) {
+				console.error("Error deleting game:", error);
+				toast.error("Error deleting game", {
+					style: { background: "#212529", color: "white", border: "1px solid gray" },
+				});
+				setListGames(listGamesCopy);
+			}
 		}
-	}
+	};
 	return (
 		<div className="container mb-3">
 			<div className="row text-center">
@@ -61,7 +64,7 @@ function List() {
 									className="bg-secondary rounded-5"
 									src={require("../assets/images/trashcan2.png")}
 									alt=""
-									onClick={() => deleteListGame(game.List_Id, game.Game_ID)}
+									onClick={() => deleteListGame2(game.List_Id, game.Game_ID)}
 								/>
 							</div>
 						</div>

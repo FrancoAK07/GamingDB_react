@@ -3,6 +3,7 @@ import axios from "axios";
 import { FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import { saveComment2, saveLike2 } from "../utils/helpers.js";
 
 function Reviews({ getGameID, getID }) {
 	const [reviews, setReviews] = useState([]);
@@ -16,28 +17,32 @@ function Reviews({ getGameID, getID }) {
 	const [showComments, setShowComments] = useState([]);
 	const [comments, setComments] = useState([]);
 	const userLogged = sessionStorage.getItem("logged");
+	const user = sessionStorage.getItem("user");
+	const userId = sessionStorage.getItem("userId");
 	const commentRef = useRef([]);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/review/myReviews", { params: { userId: userIdRef.current } }).then((data) => {
-			try {
-				setReviews(data.data);
-				setShowReadMoreOrLess(
-					data.data.map(() => {
-						return false;
-					})
-				);
-				setShowComments(
-					data.data.map(() => {
-						return false;
-					})
-				);
-				setLoading(false);
-			} catch (error) {
-				console.log(error);
-			}
-		});
+		try {
+			axios
+				.get("https://gamingdb-react.onrender.com/review/myReviews", { params: { userId: userIdRef.current } })
+				.then((data) => {
+					setReviews(data.data);
+					setShowReadMoreOrLess(
+						data.data.map(() => {
+							return false;
+						})
+					);
+					setShowComments(
+						data.data.map(() => {
+							return false;
+						})
+					);
+					setLoading(false);
+				});
+		} catch (error) {
+			console.error(error);
+		}
 	}, []);
 
 	useEffect(() => {
@@ -82,20 +87,19 @@ function Reviews({ getGameID, getID }) {
 		}
 	}
 
-	function deleteReview(reviewID) {
+	async function deleteReview2(reviewId) {
 		if (window.confirm("Delete review?")) {
-			axios.delete("https://gamingdb-react.onrender.com/review", { params: { reviewID: reviewID } }).then((data) => {
-				toast.success("review deleted", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
-				axios
-					.get("https://gamingdb-react.onrender.com/review/myReviews", { params: { userId: userIdRef.current } })
-					.then((data) => {
-						try {
-							setReviews(data.data);
-						} catch (error) {
-							console.log(error);
-						}
-					});
-			});
+			const reviewsCopy = reviews.slice();
+			setReviews((prevReviews) => prevReviews.filter((review) => review.Review_ID !== reviewId));
+			try {
+				await axios.delete("https://gamingdb-react.onrender.com/review", { params: { reviewID: reviewId } });
+			} catch (error) {
+				console.error("Error deleting review:", error);
+				toast.error("Error deleting review", {
+					style: { background: "#212529", color: "white", border: "1px solid gray" },
+				});
+				setReviews(reviewsCopy);
+			}
 		}
 	}
 
@@ -127,52 +131,6 @@ function Reviews({ getGameID, getID }) {
 				<img className="ms-2 text-center" src={require(`../assets/images/heart3.png`)} alt="" />
 			</div>
 		);
-	}
-
-	async function saveLike2(userId, reviewId) {
-		console.log(userId, reviewId);
-		if (!userId) {
-			toast.error("Please enter your account info", {
-				style: { background: "#212529", color: "white", border: "1px solid gray" },
-			});
-			return;
-		} else {
-			const alreadyLiked = likes.some(
-				(like) => parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId)
-			);
-
-			if (alreadyLiked) {
-				setLikes((prevLikes) =>
-					prevLikes.filter(
-						(like) => !(parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId))
-					)
-				);
-				await axios
-					.delete("https://gamingdb-react.onrender.com/likes", {
-						params: { userId: userId, reviewId: reviewId },
-					})
-					.catch((error) => {
-						console.error("Error removing like:", error);
-						toast.error("Error removing like", {
-							style: { background: "#212529", color: "white", border: "1px solid gray" },
-						});
-						setLikes((prevLikes) => [...prevLikes, { User_Id: userId, Review_Id: reviewId }]);
-					});
-			} else {
-				setLikes((prevLikes) => [...prevLikes, { User_Id: userId, Review_Id: reviewId }]);
-				await axios.post("https://gamingdb-react.onrender.com/likes", { userId: userId, reviewId: reviewId }).catch((error) => {
-					console.error("Error adding like:", error);
-					toast.error("Error adding like", {
-						style: { background: "#212529", color: "white", border: "1px solid gray" },
-					});
-					setLikes((prevLikes) =>
-						prevLikes.filter(
-							(like) => !(parseInt(like.User_Id) === parseInt(userId) && parseInt(like.Review_Id) === parseInt(reviewId))
-						)
-					);
-				});
-			}
-		}
 	}
 
 	//comments
@@ -215,44 +173,19 @@ function Reviews({ getGameID, getID }) {
 
 	function displayComment(review) {
 		let matchingComments = [];
-		for (let comment of comments) {
+
+		comments.forEach((comment, index) => {
 			if (parseInt(review.Review_ID) === parseInt(comment.Review_Id)) {
 				matchingComments.push(
-					<div className="col-12 p-2 border border-1 border-secondary rounded-2 mb-2 text-white">
+					<div className="col-12 p-2 border border-1 border-secondary rounded-2 mb-2 text-white" key={index}>
 						<div className="row w-100 m-auto">{comment.User_Name}</div>
-						<div className="row w-100 m-auto ms-2">{comment.Comment}</div>
+						<div className="row w-100 m-auto ms-2">{comment.Comment_Text}</div>
 					</div>
 				);
 			}
-		}
+		});
 		return matchingComments;
 	}
-
-	const saveComment = (review) => {
-		if (commentRef.current[0].value) {
-			axios
-				.post("https://gamingdb-react.onrender.com/comment", {
-					userId: userIdRef.current,
-					comment: commentRef.current[0].value,
-					reviewId: review.Review_ID,
-				})
-				.then((data) => {
-					commentRef.current[0].value = "";
-					toast("Comment Added!!", {
-						style: { background: "#212529", color: "white", border: "1px solid gray" },
-						duration: 2000,
-					});
-					axios.get("https://gamingdb-react.onrender.com/comment").then((data) => {
-						setComments(data.data);
-					});
-				});
-		} else {
-			toast("Can't add empty comment", {
-				style: { background: "#212529", color: "white", border: "1px solid gray" },
-				duration: 2000,
-			});
-		}
-	};
 
 	return (
 		<div className="review-card container mb-4 ">
@@ -283,7 +216,7 @@ function Reviews({ getGameID, getID }) {
 									className="delete-icon bg-secondary rounded-2 px-1"
 									src={require("../assets/images/trashcan2.png")}
 									alt="delete"
-									onClick={() => deleteReview(review.Review_ID)}
+									onClick={() => deleteReview2(review.Review_ID)}
 								/>
 							</div>
 						</div>
@@ -321,7 +254,7 @@ function Reviews({ getGameID, getID }) {
 										<button
 											className="like-btn btn rounded text-white border-0"
 											onClick={() => {
-												saveLike2(userIdRef.current, review.Review_ID);
+												saveLike2(userIdRef.current, review.Review_ID, likes, setLikes);
 											}}>
 											{checkIfLiked(review, index)}
 										</button>
@@ -351,7 +284,9 @@ function Reviews({ getGameID, getID }) {
 											cols="5"
 											ref={(item) => checkCommentRef(item, index)}
 											placeholder="Your comment here..."></textarea>
-										<button className="d-block btn btn-primary mb-4" onClick={() => saveComment(review)}>
+										<button
+											className="d-block btn btn-primary mb-4"
+											onClick={() => saveComment2(review, comments, commentRef, setComments, userId, user)}>
 											Save Comment
 										</button>
 									</div>

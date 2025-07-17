@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 
 function Lists() {
 	const [lists, setLists] = useState([]);
-	const listNameRef = useRef("");
+	const listNameRef = useRef(null);
 	const formRef = useRef(null);
 	const userIdRef = useRef(sessionStorage.getItem("userId"));
 	const [listInfo, setListInfo] = useState([]);
@@ -42,25 +42,45 @@ function Lists() {
 		};
 	});
 
-	const createList = () => {
+	async function createList2() {
 		if (listNameRef.current.value) {
-			axios
-				.post("https://gamingdb-react.onrender.com/list/create", {
+			const listsCopy = lists.slice();
+			setLists((prevLists) => [...prevLists, { List_Name: listNameRef.current.value, User_Id: userIdRef.current }]);
+			showForm();
+			try {
+				await axios.post("https://gamingdb-react.onrender.com/list/create", {
 					listName: listNameRef.current.value,
 					userId: userIdRef.current,
-				})
-				.then(() => {
-					axios
-						.get("https://gamingdb-react.onrender.com/list/myLists", { params: { userId: userIdRef.current } })
-						.then((data) => {
-							setLists(data.data);
-						});
 				});
-			formRef.current.classList.add("d-none");
+
+				listNameRef.current.value = "";
+
+				try {
+					const updatedLists = await axios.get("https://gamingdb-react.onrender.com/list/myLists", {
+						params: { userId: userIdRef.current },
+					});
+
+					setLists(updatedLists.data);
+				} catch (getError) {
+					console.error("Error updating Lists:", getError);
+					toast.error("Error updating Lists", {
+						style: { background: "#212529", color: "white", border: "1px solid gray" },
+					});
+				}
+			} catch (postError) {
+				console.error("Error creating new list:", postError);
+				toast.error("Error creating new list", {
+					style: { background: "#212529", color: "white", border: "1px solid gray" },
+				});
+				setLists(listsCopy);
+				listNameRef.current.value = "";
+			}
 		} else {
-			alert("please enter your list name");
+			toast("Please enter a name for the list", {
+				style: { background: "#212529", color: "white", border: "1px solid gray" },
+			});
 		}
-	};
+	}
 
 	function filterLists(listId) {
 		let filteredListInfo = [];
@@ -80,14 +100,19 @@ function Lists() {
 		}
 	}
 
-	function deleteList(listId) {
+	async function deleteList2(listId) {
 		if (window.confirm("delete list?")) {
-			axios.delete("https://gamingdb-react.onrender.com/list", { params: { listId: listId } }).then((data) => {
-				toast.success("list deleted", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
-				axios.get("https://gamingdb-react.onrender.com/list/myLists", { params: { userId: userIdRef.current } }).then((data) => {
-					setLists(data.data);
+			const listsCopy = lists.slice(); //copy of starting lists
+			setLists((prevLists) => prevLists.filter((list) => list.List_Id !== listId));
+			try {
+				await axios.delete("https://gamingdb-react.onrender.com/list", { params: { listId: listId } });
+			} catch (error) {
+				console.error("Error deleting list:", error);
+				toast.error("Error deleting list", {
+					style: { background: "#212529", color: "white", border: "1px solid gray" },
 				});
-			});
+				setLists(listsCopy);
+			}
 		}
 	}
 
@@ -109,7 +134,7 @@ function Lists() {
 			<div className="lists row text-center text-white mt-2 w-100 m-auto">
 				{lists.map((list) => {
 					return (
-						<div className="list-col col-12 col-md-6 col-lg-4 mt-3 position-relative" key={list.List_Id}>
+						<div className="list-col col-12 col-md-6 col-lg-4 mt-3 position-relative" key={list.List_Name}>
 							<h5 className="row m-auto ms-2 mb-1">{list.List_Name}</h5>
 							<div className="row m-auto">
 								{filterLists(list.List_Id)}
@@ -150,7 +175,7 @@ function Lists() {
 									className="bg-secondary rounded-3"
 									src={require("../assets/images/trashcan2.png")}
 									alt="delete"
-									onClick={() => deleteList(list.List_Id)}
+									onClick={() => deleteList2(list.List_Id)}
 								/>
 							</div>
 						</div>
@@ -166,7 +191,7 @@ function Lists() {
 							List Name
 						</label>
 						<input type="text" name="listName" ref={listNameRef} />
-						<button className="btn btn-primary mt-2 w-auto m-auto" onClick={createList}>
+						<button className="btn btn-primary mt-2 w-auto m-auto" onClick={createList2}>
 							Create
 						</button>
 					</div>

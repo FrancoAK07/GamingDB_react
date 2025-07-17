@@ -48,7 +48,7 @@ function CreateReview({ gameImg1, background1, gameID }) {
 							border: "1px solid gray",
 						},
 					});
-					navigate("/");
+					navigate("/reviews");
 				});
 		}
 	}

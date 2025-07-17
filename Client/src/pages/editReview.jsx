@@ -9,7 +9,7 @@ function EditReview({ reviewID, gameID }) {
 	const [file, setFile] = useState(null);
 	const [gameFile, setGameFile] = useState(null);
 	const [dbRating, setDbRating] = useState(null);
-	const reviewRef = useRef("");
+	const reviewRef = useRef(null);
 	const [platform, setPlatform] = useState("");
 	const navigate = useNavigate();
 
@@ -43,7 +43,7 @@ function EditReview({ reviewID, gameID }) {
 					reviewID: reviewID,
 					gameID: gameID,
 				})
-				.then((result) => {
+				.then(() => {
 					toast.success("review updated!", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
 					navigate("/reviews");
 				});
