@@ -79,7 +79,7 @@ function ReviewCard() {
 	async function saveLike2(userId, reviewId) {
 		console.log(userId, reviewId);
 		if (!userId) {
-			toast.error("Please enter your account info", {
+			toast.error("Log in to like a comment", {
 				style: { background: "#212529", color: "white", border: "1px solid gray" },
 			});
 			return;
