@@ -84,7 +84,7 @@ function ReviewCard() {
 				return (
 					<div className="p-2 mb-4 rounded border border-secondary" key={review.Review_ID}>
 						<div className="row w-100 m-auto">
-							<h2 className="text-white">{review.Game_Title}</h2>
+							<h2 className="text-white text-center">{review.Game_Title}</h2>
 						</div>
 						<div className="row w-100 m-auto">
 							<div className="col-6 col-lg-2 mh-100 text-center p-2 mx-auto">

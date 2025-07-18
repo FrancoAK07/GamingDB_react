@@ -51,17 +51,17 @@ function Home() {
 						<div className="row w-100 m-auto text-start ">
 							<div className="col-12 p-0">
 								<h2 className="text-white headlines rounded-3 p-3 w-auto">
-									<img src={list} alt="list" /> Create your lists of games
+									<img src={list} alt="list" /> Create lists of your favorite games!
 								</h2>
 							</div>
 							<div className="col-12 p-0">
 								<h2 className="text-white headlines rounded-3 p-3">
-									<img src={list} alt="list" /> Review games and read reviews from other players
+									<img src={list} alt="list" /> Review games and read reviews from other players!
 								</h2>
 							</div>
 						</div>
-						<div className="row text-center w-50 ms-auto me-auto mt-3">
-							<div className="col p-0 w-100">
+						<div className="row text-center justify-content-center w-100 mx-auto mt-3">
+							<div className="col-10 col-lg-7 p-0">
 								<div className="row m-auto">
 									<h1 className="text-light p-0">New Games</h1>
 								</div>
