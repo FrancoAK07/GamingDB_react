@@ -80,18 +80,14 @@ async function saveLike2(userId, reviewId, likes, setLikes) {
 }
 
 // expand or shrink review
-function expandOrShrink2(index, e, isExpanded, setIsExpanded, reviewRef) {
-	if (isExpanded[index] === true) {
-		reviewRef.current[index].classList.add("user-review");
-		let isExpandedCopy = isExpanded;
-		isExpandedCopy[index] = false;
-		setIsExpanded(isExpandedCopy);
+function expandOrShrink2(e, isExpanded, setIsExpanded, reviewRef) {
+	if (isExpanded === true) {
+		reviewRef.current.classList.add("user-review");
+		setIsExpanded(false);
 		e.target.innerHTML = "Read More";
 	} else {
-		reviewRef.current[index].classList.remove("user-review");
-		let isExpandedCopy = isExpanded;
-		isExpandedCopy[index] = true;
-		setIsExpanded(isExpandedCopy);
+		reviewRef.current.classList.remove("user-review");
+		setIsExpanded(true);
 		e.target.innerHTML = "Read Less";
 	}
 }
@@ -142,7 +138,7 @@ const countComments = (review, index, comments, reviewsComments) => {
 const expandComments = (index, userLogged, showComments, setShowComments) => {
 	if (userLogged) {
 		let showCommentsCopy = showComments;
-		showCommentsCopy.forEach((item, i) => {
+		showCommentsCopy.forEach((_, i) => {
 			if (index === i) {
 				showCommentsCopy[index] = !showCommentsCopy[index];
 			} else {

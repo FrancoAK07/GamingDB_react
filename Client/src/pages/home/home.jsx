@@ -1,33 +1,48 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import list from "../../assets/images/list_1950715.png";
-import ReviewCard from "./reviewCard";
+import ReviewCard2 from "../../components/reviewCard2";
 import toast from "react-hot-toast";
 
 function Home() {
 	const [recentGames, setRecentGames] = useState([]);
+	const [recentReviews, setRecentReviews] = useState([]);
+	const [likes, setLikes] = useState([]);
+	const [comments, setComments] = useState([]);
+	const [showComments, setShowComments] = useState([]);
 	const [imagesLoading, setImagesLoading] = useState([]);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/game/recent").then((data) => {
-			setRecentGames(data.data);
-			let imagesArray = [];
-			data.data.forEach(() => {
-				imagesArray.push(true);
+		const fetchHomeData = async () => {
+			toast("The page can take a minute or so to load completely, thanks for your patience", {
+				id: "loading_message",
+				style: {
+					background: "#212529",
+					color: "white",
+					border: "1px solid gray",
+				},
+				duration: 6000,
+				position: "top-left",
 			});
-			setImagesLoading([...imagesArray]);
-		});
+			try {
+				const [recentGamesRes, recentReviewsRes, likesRes, commentsRes] = await Promise.all([
+					axios.get("https://gamingdb-react.onrender.com/game/recent"),
+					axios.get("https://gamingdb-react.onrender.com/review/recent"),
+					axios.get("https://gamingdb-react.onrender.com/likes"),
+					axios.get("https://gamingdb-react.onrender.com/comment"),
+				]);
+				setRecentGames(recentGamesRes.data);
+				setImagesLoading(new Array(recentGamesRes.data.length).fill(true));
+				setRecentReviews(recentReviewsRes.data);
+				setShowComments(new Array(recentReviewsRes.data.length).fill(false));
+				setLikes(likesRes.data);
+				setComments(commentsRes.data);
+			} catch (error) {
+				console.error("Error fetching data:", error);
+			}
+		};
 
-		toast("The page can take a minute or so to load completely, thanks for your patience", {
-			id: "loading_message",
-			style: {
-				background: "#212529",
-				color: "white",
-				border: "1px solid gray",
-			},
-			duration: 6000,
-			position: "top-left",
-		});
+		fetchHomeData();
 	}, []);
 
 	function handleImageLoading(index) {
@@ -95,7 +110,19 @@ function Home() {
 					<div className="row text-center w-100 m-auto mb-3">
 						<h1 className="text-white">Recent Reviews</h1>
 					</div>
-					<ReviewCard />
+					{recentReviews.map((review, index) => (
+						<ReviewCard2
+							key={review.Review_ID}
+							likes={likes}
+							setLikes={setLikes}
+							comments={comments}
+							setComments={setComments}
+							review={review}
+							index={index}
+							showComments={showComments}
+							setShowComments={setShowComments}
+						/>
+					))}
 				</div>
 			</div>
 		</div>

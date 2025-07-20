@@ -45,11 +45,11 @@ function List() {
 				</div>
 			) : null}
 
-			<div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 w-75 m-auto row-gap-1">
-				{listGames.map((game, index) => {
+			<div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 m-auto">
+				{listGames.map((game) => {
 					return (
-						<div className="gamecol col rounded p-2 position-relative" key={game.Game_ID}>
-							<div className="d-block h-100">
+						<div className="gamecol col rounded p-4 p-sm-2 " key={game.Game_ID}>
+							<div className="d-block h-100 position-relative">
 								<img
 									className="myreview-game rounded w-100 "
 									src={require(`../assets/images/${game.Game_Img}`)}
@@ -58,14 +58,14 @@ function List() {
 								<div className="hover-name position-absolute top-50 start-50 translate-middle text-white fw-bold text-center">
 									{game.Game_Title}
 								</div>
-							</div>
-							<div className="delete-listGame-icon position-absolute rounded-5">
-								<img
-									className="bg-secondary rounded-5"
-									src={require("../assets/images/trashcan2.png")}
-									alt=""
-									onClick={() => deleteListGame2(game.List_Id, game.Game_ID)}
-								/>
+								<div className="delete-listGame-icon position-absolute rounded-5">
+									<img
+										className="bg-secondary rounded-5"
+										src={require("../assets/images/trashcan2.png")}
+										alt=""
+										onClick={() => deleteListGame2(game.List_Id, game.Game_ID)}
+									/>
+								</div>
 							</div>
 						</div>
 					);

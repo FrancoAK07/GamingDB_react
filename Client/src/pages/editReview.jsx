@@ -41,7 +41,6 @@ function EditReview({ reviewID, gameID }) {
 					rating: parseInt(dbRating),
 					platform: platform,
 					reviewID: reviewID,
-					gameID: gameID,
 				})
 				.then(() => {
 					toast.success("review updated!", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
