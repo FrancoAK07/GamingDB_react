@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import { isLoading } from "../utils/helpers.js";
 
 function Games({ getID, getGameImg, getBackground, getGameID }) {
 	const [games, setGames] = useState([]);
@@ -18,6 +19,7 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 	const addToListBtnRef = useRef([]);
 	const [listGames, setListGames] = useState();
 	const [options, setOptions] = useState([]);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		axios.get("https://gamingdb-react.onrender.com/game/getAll").then((data) => {
@@ -27,6 +29,7 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 					return false;
 				})
 			);
+			setLoading(false);
 		});
 	}, []);
 
@@ -168,15 +171,9 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 			<div className="row text-center mt-2">
 				<h1 className="text-white">Games</h1>
 			</div>
-			{!games.length ? (
-				<div className="row w-75 m-auto justify-content-center position-absolute top-50 start-50 translate-middle">
-					<div className="spinner-border text-primary" role="status">
-						<span className="visually-hidden">Loading...</span>
-					</div>
-				</div>
-			) : null}
-
-			{games.length ? (
+			{loading ? (
+				isLoading(loading)
+			) : (
 				<div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 w-75 m-auto row-gap-1">
 					{games.map((game, index) => {
 						return (
@@ -225,7 +222,7 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 						);
 					})}
 				</div>
-			) : null}
+			)}
 
 			{showListsForm ? (
 				<div

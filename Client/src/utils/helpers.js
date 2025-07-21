@@ -178,6 +178,20 @@ function displayComment(review, comments) {
 	return matchingComments;
 }
 
+function isLoading(loading) {
+	if (loading) {
+		return (
+			<div className="row w-75 m-auto justify-content-center position-absolute top-50 start-50 translate-middle">
+				<div className="spinner-border text-primary" role="status">
+					<span className="visually-hidden">Loading...</span>
+				</div>
+			</div>
+		);
+	} else {
+		return null;
+	}
+}
+
 export {
 	saveComment2,
 	saveLike2,
@@ -188,4 +202,5 @@ export {
 	expandComments,
 	checkCommentRef,
 	displayComment,
+	isLoading,
 };
