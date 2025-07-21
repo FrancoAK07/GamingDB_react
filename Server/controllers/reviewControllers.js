@@ -18,14 +18,14 @@ export const getLastReviews = async (req, res) => {
 };
 
 export const saveReview = async (req, res) => {
-	const { review, rating, platform, user, gameid, userId } = req.body;
+	const { review, rating, platform, user, gameId, userId } = req.body;
 	try {
 		const savedReview = await Review.create({
 			Game_Review: review,
 			Game_Rating: rating,
 			Platform: platform,
 			User: user,
-			Game_ID: gameid,
+			Game_ID: gameId,
 			User_Id: userId,
 		});
 		res.status(200).json(savedReview);
