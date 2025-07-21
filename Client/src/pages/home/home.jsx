@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import list from "../../assets/images/list_1950715.png";
 import ReviewCard2 from "../../components/reviewCard2";
 import toast from "react-hot-toast";
+import { getRecentGames, getLastReviews, getLikes, getComments } from "../../api";
 
 function Home() {
 	const [recentGames, setRecentGames] = useState([]);
@@ -25,11 +25,17 @@ function Home() {
 				position: "top-left",
 			});
 			try {
+				// const [recentGamesRes, recentReviewsRes, likesRes, commentsRes] = await Promise.all([
+				// 	axios.get("https://gamingdb-react.onrender.com/game/recent"),
+				// 	axios.get("https://gamingdb-react.onrender.com/review/recent"),
+				// 	axios.get("https://gamingdb-react.onrender.com/likes"),
+				// 	axios.get("https://gamingdb-react.onrender.com/comment"),
+				// ]);
 				const [recentGamesRes, recentReviewsRes, likesRes, commentsRes] = await Promise.all([
-					axios.get("https://gamingdb-react.onrender.com/game/recent"),
-					axios.get("https://gamingdb-react.onrender.com/review/recent"),
-					axios.get("https://gamingdb-react.onrender.com/likes"),
-					axios.get("https://gamingdb-react.onrender.com/comment"),
+					getRecentGames(),
+					getLastReviews(),
+					getLikes(),
+					getComments(),
 				]);
 				setRecentGames(recentGamesRes.data);
 				setImagesLoading(new Array(recentGamesRes.data.length).fill(true));

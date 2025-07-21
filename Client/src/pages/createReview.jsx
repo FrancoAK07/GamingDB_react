@@ -4,12 +4,13 @@ import Dropdown from "../components/dropdown";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { saveReview } from "../api";
 
 function CreateReview({ gameImg1, background1, gameID }) {
 	const [rating, setRating] = useState(null);
 	const [platform, setPlatform] = useState("");
 	const navigate = useNavigate();
-	const reviewTextRef = useRef("");
+	const reviewTextRef = useRef(null);
 	const user = useRef(sessionStorage.getItem("user"));
 	const userId = useRef(sessionStorage.getItem("userId"));
 
@@ -31,15 +32,7 @@ function CreateReview({ gameImg1, background1, gameID }) {
 				},
 			});
 		} else {
-			axios
-				.post("https://gamingdb-react.onrender.com/review", {
-					review: reviewTextRef.current.value,
-					rating: parseInt(rating),
-					platform: platform,
-					user: user.current,
-					gameid: gameID,
-					userId: userId.current,
-				})
+			saveReview(reviewTextRef.current.value, parseInt(rating), platform, user.current, gameID, userId.current)
 				.then(() => {
 					toast.success("review created!", {
 						style: {
@@ -49,7 +42,8 @@ function CreateReview({ gameImg1, background1, gameID }) {
 						},
 					});
 					navigate("/reviews");
-				});
+				})
+				.catch((err) => console.error("this is the error:", err));
 		}
 	}
 

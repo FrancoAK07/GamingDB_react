@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import toast from "react-hot-toast";
+import { loginUser } from "../api";
 
 function LoginForm({ active, setActive, onClickOutside, setUserLogged, setRegisterActive, userName }) {
 	const visible =
@@ -41,13 +41,10 @@ function LoginForm({ active, setActive, onClickOutside, setUserLogged, setRegist
 
 	const handleLogin = async (userEmail, userPassword) => {
 		try {
-			const loginData = await axios.post("https://gamingdb-react.onrender.com/user/login", {
-				userEmail: userEmail,
-				userPassword: userPassword,
-			});
+			const loginData = await loginUser(userEmail, userPassword);
 			const userId = loginData.data.userId;
 			const user = loginData.data.userName;
-			if (userId && user) {
+			if (loginData.data) {
 				sessionStorage.setItem("userId", userId);
 				userName(user);
 				setUserLogged(true);
@@ -65,7 +62,8 @@ function LoginForm({ active, setActive, onClickOutside, setUserLogged, setRegist
 			}
 		} catch (error) {
 			console.error("Error:", error);
-			const errorMessage = error.response ? error.response.data : "Network error. Please try again.";
+			const errorMessage =
+				error.response.status === 400 || error.response.status === 401 ? error.response.data : "Network error. Please try again.";
 			toast.error(errorMessage, { style: { background: "#212529", color: "white", border: "1px solid gray" } });
 		}
 	};

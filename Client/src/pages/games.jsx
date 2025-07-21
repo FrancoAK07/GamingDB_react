@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { isLoading } from "../utils/helpers.js";
+import { getAllGames } from "../api/gamesApi.js";
 
 function Games({ getID, getGameImg, getBackground, getGameID }) {
 	const [games, setGames] = useState([]);
@@ -22,10 +23,20 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/game/getAll").then((data) => {
-			setGames(data.data);
+		// axios.get("https://gamingdb-react.onrender.com/game/getAll").then((data) => {
+		// 	setGames(data.data);
+		// 	setOptions(
+		// 		data.data.map(() => {
+		// 			return false;
+		// 		})
+		// 	);
+		// 	setLoading(false);
+		// });
+
+		getAllGames().then((games) => {
+			setGames(games.data);
 			setOptions(
-				data.data.map(() => {
+				games.data.map(() => {
 					return false;
 				})
 			);
