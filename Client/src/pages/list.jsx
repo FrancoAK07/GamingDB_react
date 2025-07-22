@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
+import { getThisListGames, deleteListGame } from "../api";
 
 function List() {
 	const listId = sessionStorage.getItem("listId");
@@ -8,7 +8,7 @@ function List() {
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/listGames/games", { params: { listId: listId } }).then((data) => {
+		getThisListGames(listId).then((data) => {
 			setListGames(data.data);
 			setLoading(false);
 		});
@@ -19,9 +19,7 @@ function List() {
 			const listGamesCopy = listGames.slice();
 			setListGames((prevListGames) => prevListGames.filter((game) => game.Game_ID !== gameId));
 			try {
-				await axios.delete("https://gamingdb-react.onrender.com/listGames", {
-					params: { listId: listId, gameId: gameId },
-				});
+				await deleteListGame(listId, gameId);
 			} catch (error) {
 				console.error("Error deleting game:", error);
 				toast.error("Error deleting game", {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import list from "../../assets/images/list_1950715.png";
-import ReviewCard2 from "../../components/reviewCard2";
+import list from "../assets/images/list_1950715.png";
+import ReviewCard2 from "../components/reviewCard2";
 import toast from "react-hot-toast";
-import { getRecentGames, getLastReviews, getLikes, getComments } from "../../api";
+import { getRecentGames, getLastReviews, getLikes, getComments } from "../api";
 
 function Home() {
 	const [recentGames, setRecentGames] = useState([]);
@@ -25,12 +25,6 @@ function Home() {
 				position: "top-left",
 			});
 			try {
-				// const [recentGamesRes, recentReviewsRes, likesRes, commentsRes] = await Promise.all([
-				// 	axios.get("https://gamingdb-react.onrender.com/game/recent"),
-				// 	axios.get("https://gamingdb-react.onrender.com/review/recent"),
-				// 	axios.get("https://gamingdb-react.onrender.com/likes"),
-				// 	axios.get("https://gamingdb-react.onrender.com/comment"),
-				// ]);
 				const [recentGamesRes, recentReviewsRes, likesRes, commentsRes] = await Promise.all([
 					getRecentGames(),
 					getLastReviews(),
@@ -63,7 +57,7 @@ function Home() {
 		<div className="home h-100">
 			<div className="home-background position-relative w-100">
 				<div className="home-gradient h-100 w-100 position-absolute"></div>
-				<img className="h-100 w-100" src={require("../../assets/images/gamingDbbg.jpg")} alt="" />
+				<img className="h-100 w-100" src={require("../assets/images/gamingDbbg.jpg")} alt="" />
 				<div className="position-absolute top-0 w-100">
 					<div className="container mb-5">
 						<div className="row w-100 m-auto text-center text-white my-4 ">
@@ -100,7 +94,7 @@ function Home() {
 													<div className="col p-1" key={game.Game_ID}>
 														<img
 															className="img-fluid"
-															src={require(`../../assets/images/${game.Game_Img}`)}
+															src={require(`../assets/images/${game.Game_Img}`)}
 															alt=""
 															style={{ display: imagesLoading[i] ? "none" : "block" }}
 															onLoad={() => handleImageLoading(i)}

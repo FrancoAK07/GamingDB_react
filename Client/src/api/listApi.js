@@ -11,12 +11,12 @@ export const createList = async (listName, userId) => {
 	const response = await axios.post(`${apiUrl}/create`, { listName, userId });
 	return response;
 };
-export const addToList = async (listId, gameId) => {
+export const addGame = async (listId, gameId) => {
 	const createdList = await axios.post(`${apiUrl}/add`, { listId, gameId });
 	return createdList;
 };
 export const getListImage = async (userId) => {
-	const response = await axios.get(`${apiUrl}/listImage`, { params: userId });
+	const response = await axios.get(`${apiUrl}/listImage`, { params: { userId: userId } });
 	return response;
 };
 export const deleteList = async (listId) => {

@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import StarRating from "../components/starRating";
 import Dropdown from "../components/dropdown";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { saveReview } from "../api";

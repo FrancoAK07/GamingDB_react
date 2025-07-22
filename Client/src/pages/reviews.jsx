@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
 import ReviewCard2 from "../components/reviewCard2.jsx";
+import { getMyReviews, deleteReview, getLikes, getComments } from "../api";
 
 function Reviews({ getGameID, getID }) {
 	const [reviews, setReviews] = useState([]);
@@ -13,30 +13,28 @@ function Reviews({ getGameID, getID }) {
 
 	useEffect(() => {
 		try {
-			axios
-				.get("https://gamingdb-react.onrender.com/review/myReviews", { params: { userId: userIdRef.current } })
-				.then((data) => {
-					setReviews(data.data);
-					setShowComments(
-						data.data.map(() => {
-							return false;
-						})
-					);
-					setLoading(false);
-				});
+			getMyReviews(userIdRef.current).then((data) => {
+				setReviews(data.data);
+				setShowComments(
+					data.data.map(() => {
+						return false;
+					})
+				);
+				setLoading(false);
+			});
 		} catch (error) {
 			console.error(error);
 		}
 	}, []);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/likes").then((data) => {
+		getLikes().then((data) => {
 			setLikes(data.data);
 		});
 	}, []);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/comment").then((data) => {
+		getComments().then((data) => {
 			setComments(data.data);
 		});
 	}, []);
@@ -46,7 +44,7 @@ function Reviews({ getGameID, getID }) {
 			const reviewsCopy = reviews.slice();
 			setReviews((prevReviews) => prevReviews.filter((review) => review.Review_ID !== reviewId));
 			try {
-				await axios.delete("https://gamingdb-react.onrender.com/review", { params: { reviewID: reviewId } });
+				await deleteReview(reviewId);
 			} catch (error) {
 				console.error("Error deleting review:", error);
 				toast.error("Error deleting review", {

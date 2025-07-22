@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import StarRating from "../components/starRating";
 import Dropdown from "../components/dropdown";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { isLoading } from "../utils/helpers.js";
+import { getReviewInfo, update } from "../api";
 
 function EditReview({ reviewID, gameID }) {
 	const [file, setFile] = useState(null);
@@ -25,8 +25,7 @@ function EditReview({ reviewID, gameID }) {
 	}
 
 	useEffect(() => {
-		axios
-			.get("https://gamingdb-react.onrender.com/review/reviewInfo", { params: { reviewID: reviewID } })
+		getReviewInfo(reviewID)
 			.then((data) => {
 				setDbRating(data.data[0].Game_Rating);
 				setPlatform(data.data[0].Platform);
@@ -46,17 +45,10 @@ function EditReview({ reviewID, gameID }) {
 		if (!reviewRef.current.value || !dbRating || !platform) {
 			alert("please complete the review");
 		} else {
-			axios
-				.put("https://gamingdb-react.onrender.com/review", {
-					review: reviewRef.current.value,
-					rating: parseInt(dbRating),
-					platform: platform,
-					reviewID: reviewID,
-				})
-				.then(() => {
-					toast.success("review updated!", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
-					navigate("/reviews");
-				});
+			update(reviewRef.current.value, parseInt(dbRating), platform, reviewID).then(() => {
+				toast.success("review updated!", { style: { background: "#212529", color: "white", border: "1px solid gray" } });
+				navigate("/reviews");
+			});
 		}
 	}
 

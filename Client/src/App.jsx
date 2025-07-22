@@ -4,7 +4,7 @@ import "./dist/styles.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "./components/navbar";
 import LoginForm from "./components/loginForm";
-import Home from "./pages/home/home";
+import Home from "./pages/home";
 import CreateReview from "./pages/createReview";
 import RegisterForm from "./components/registerForm";
 import UserNavbar from "./components/userNavbar";

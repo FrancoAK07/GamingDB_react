@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import { getMyLists, getListImage, createList, deleteList } from "../api";
 
 function Lists() {
 	const [lists, setLists] = useState([]);
@@ -18,14 +18,14 @@ function Lists() {
 	};
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/list/myLists", { params: { userId: userIdRef.current } }).then((data) => {
+		getMyLists(userIdRef.current).then((data) => {
 			setLists(data.data);
 			setLoading(false);
 		});
 	}, []);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/list/listImage", { params: { userId: userIdRef.current } }).then((result) => {
+		getListImage(userIdRef.current).then((result) => {
 			setListInfo(result.data);
 		});
 	}, []);
@@ -48,17 +48,11 @@ function Lists() {
 			setLists((prevLists) => [...prevLists, { List_Name: listNameRef.current.value, User_Id: userIdRef.current }]);
 			showForm();
 			try {
-				await axios.post("https://gamingdb-react.onrender.com/list/create", {
-					listName: listNameRef.current.value,
-					userId: userIdRef.current,
-				});
-
+				await createList(listNameRef.current.value, userIdRef.current);
 				listNameRef.current.value = "";
 
 				try {
-					const updatedLists = await axios.get("https://gamingdb-react.onrender.com/list/myLists", {
-						params: { userId: userIdRef.current },
-					});
+					const updatedLists = await getMyLists(userIdRef.current);
 
 					setLists(updatedLists.data);
 				} catch (getError) {
@@ -105,7 +99,7 @@ function Lists() {
 			const listsCopy = lists.slice(); //copy of starting lists
 			setLists((prevLists) => prevLists.filter((list) => list.List_Id !== listId));
 			try {
-				await axios.delete("https://gamingdb-react.onrender.com/list", { params: { listId: listId } });
+				await deleteList(listId);
 			} catch (error) {
 				console.error("Error deleting list:", error);
 				toast.error("Error deleting list", {

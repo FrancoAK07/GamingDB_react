@@ -13,7 +13,7 @@ export const getMyReviews = async (userId) => {
 };
 
 export const getReviewInfo = async (reviewId) => {
-	const reviewInfo = await axios.get(`${apiUrl}/reviewInfo`, { params: { reviewId: reviewId } });
+	const reviewInfo = await axios.get(`${apiUrl}/reviewInfo`, { params: { reviewID: reviewId } });
 	return reviewInfo;
 };
 
@@ -23,7 +23,7 @@ export const saveReview = async (review, rating, platform, user, gameId, userId)
 	return savedReview;
 };
 
-export const updateReview = async (review, rating, platform, reviewID) => {
+export const update = async (review, rating, platform, reviewID) => {
 	const response = await axios.put(`${apiUrl}`, { review, rating, platform, reviewID });
 	return response;
 };
