@@ -55,7 +55,7 @@ function EditReview({ reviewID, gameID }) {
 	return (
 		<div className="create-review vh-100 bg-dark container-fluid p-0">
 			{loading ? (
-				isLoading(loading)
+				isLoading()
 			) : (
 				<>
 					<div className="background position-relative">

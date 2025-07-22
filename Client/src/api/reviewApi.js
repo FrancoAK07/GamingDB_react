@@ -18,7 +18,6 @@ export const getReviewInfo = async (reviewId) => {
 };
 
 export const saveReview = async (review, rating, platform, user, gameId, userId) => {
-	console.log(review, rating, platform, user, gameId, userId);
 	const savedReview = await axios.post(`${apiUrl}`, { review, rating, platform, user, gameId, userId });
 	return savedReview;
 };

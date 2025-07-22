@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import ReviewCard2 from "../components/reviewCard2.jsx";
 import { getMyReviews, deleteReview, getLikes, getComments } from "../api";
+import { isLoading } from "../utils/helpers.js";
 
 function Reviews({ getGameID, getID }) {
 	const [reviews, setReviews] = useState([]);
@@ -58,32 +59,26 @@ function Reviews({ getGameID, getID }) {
 	return (
 		<div className="review-card container mb-4 ">
 			<h1 className="mb-3 text-white text-center mt-2">My Reviews</h1>
-			{loading ? (
-				<div className="row w-75 m-auto justify-content-center position-absolute top-50 start-50 translate-middle">
-					<div className="spinner-border text-primary" role="status">
-						<span className="visually-hidden">Loading...</span>
-					</div>
-				</div>
-			) : (
-				reviews.map((review, index) => {
-					return (
-						<ReviewCard2
-							key={review.Review_ID}
-							likes={likes}
-							setLikes={setLikes}
-							comments={comments}
-							setComments={setComments}
-							review={review}
-							index={index}
-							deleteReview={deleteReview2}
-							getGameID={getGameID}
-							getID={getID}
-							showComments={showComments}
-							setShowComments={setShowComments}
-						/>
-					);
-				})
-			)}
+			{loading
+				? isLoading()
+				: reviews.map((review, index) => {
+						return (
+							<ReviewCard2
+								key={review.Review_ID}
+								likes={likes}
+								setLikes={setLikes}
+								comments={comments}
+								setComments={setComments}
+								review={review}
+								index={index}
+								deleteReview={deleteReview2}
+								getGameID={getGameID}
+								getID={getID}
+								showComments={showComments}
+								setShowComments={setShowComments}
+							/>
+						);
+					})}
 		</div>
 	);
 }

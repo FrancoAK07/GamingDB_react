@@ -171,17 +171,13 @@ function displayComment(review, comments) {
 }
 
 function isLoading(loading) {
-	if (loading) {
-		return (
-			<div className="row w-75 m-auto justify-content-center position-absolute top-50 start-50 translate-middle">
-				<div className="spinner-border text-primary" role="status">
-					<span className="visually-hidden">Loading...</span>
-				</div>
+	return (
+		<div className="row w-75 m-auto justify-content-center position-absolute top-50 start-50 translate-middle">
+			<div className="spinner-border text-primary" role="status">
+				<span className="visually-hidden">Loading...</span>
 			</div>
-		);
-	} else {
-		return null;
-	}
+		</div>
+	);
 }
 
 export {

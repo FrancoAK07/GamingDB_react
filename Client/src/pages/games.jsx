@@ -173,7 +173,7 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 				<h1 className="text-white">Games</h1>
 			</div>
 			{loading ? (
-				isLoading(loading)
+				isLoading()
 			) : (
 				<div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 w-75 m-auto row-gap-1">
 					{games.map((game, index) => {

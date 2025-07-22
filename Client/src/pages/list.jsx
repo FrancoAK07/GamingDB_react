@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { getThisListGames, deleteListGame } from "../api";
+import { isLoading } from "../utils/helpers.js";
 
 function List() {
 	const listId = sessionStorage.getItem("listId");
@@ -31,44 +32,47 @@ function List() {
 	};
 	return (
 		<div className="container mb-3">
-			<div className="row text-center">
-				<h1 className="text-white mt-2">{listGames[0]?.List_Name}</h1>
-			</div>
-
 			{loading ? (
-				<div className="row w-75 m-auto justify-content-center position-absolute top-50 start-50 translate-middle">
-					<div className="spinner-border text-primary" role="status">
-						<span className="visually-hidden">Loading...</span>
+				isLoading()
+			) : (
+				<>
+					<div className="row text-center">
+						<h1 className="text-white mt-2">{listGames[0]?.List_Name}</h1>
 					</div>
-				</div>
-			) : null}
-
-			<div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 m-auto">
-				{listGames.map((game) => {
-					return (
-						<div className="gamecol col rounded p-4 p-sm-2 " key={game.Game_ID}>
-							<div className="d-block h-100 position-relative">
-								<img
-									className="myreview-game rounded w-100 "
-									src={require(`../assets/images/${game.Game_Img}`)}
-									alt={"game title"}
-								/>
-								<div className="hover-name position-absolute top-50 start-50 translate-middle text-white fw-bold text-center">
-									{game.Game_Title}
+					{listGames.length ? (
+						listGames.map((game) => {
+							return (
+								<div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 m-auto">
+									<div className="gamecol col rounded p-4 p-sm-2 " key={game.Game_ID}>
+										<div className="d-block h-100 position-relative">
+											<img
+												className="myreview-game rounded w-100 "
+												src={require(`../assets/images/${game.Game_Img}`)}
+												alt={"game title"}
+											/>
+											<div className="hover-name position-absolute top-50 start-50 translate-middle text-white fw-bold text-center">
+												{game.Game_Title}
+											</div>
+											<div className="delete-listGame-icon position-absolute rounded-5">
+												<img
+													className="bg-secondary rounded-5"
+													src={require("../assets/images/trashcan2.png")}
+													alt=""
+													onClick={() => deleteListGame2(game.List_Id, game.Game_ID)}
+												/>
+											</div>
+										</div>
+									</div>
 								</div>
-								<div className="delete-listGame-icon position-absolute rounded-5">
-									<img
-										className="bg-secondary rounded-5"
-										src={require("../assets/images/trashcan2.png")}
-										alt=""
-										onClick={() => deleteListGame2(game.List_Id, game.Game_ID)}
-									/>
-								</div>
-							</div>
+							);
+						})
+					) : (
+						<div className="row justify-content-center text-center">
+							<h1 className="text-white">No games in this list yet</h1>
 						</div>
-					);
-				})}
-			</div>
+					)}
+				</>
+			)}
 		</div>
 	);
 }
