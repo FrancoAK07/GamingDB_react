@@ -19,7 +19,6 @@ export const getLastReviews = async (req, res) => {
 
 export const saveReview = async (req, res) => {
 	const { review, rating, platform, user, gameId, userId } = req.body;
-	console.log(review, rating, platform, user, gameId, userId);
 	try {
 		const savedReview = await Review.create({
 			Game_Review: review,
