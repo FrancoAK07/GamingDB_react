@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import { isLoading } from "../utils/helpers.js";
+import { getAllGames, getMyReviews, getMyLists, getListGames, addGame } from "../api";
 
 function Games({ getID, getGameImg, getBackground, getGameID }) {
 	const [games, setGames] = useState([]);
@@ -18,21 +19,23 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 	const addToListBtnRef = useRef([]);
 	const [listGames, setListGames] = useState();
 	const [options, setOptions] = useState([]);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/game/getAll").then((data) => {
-			setGames(data.data);
+		getAllGames().then((games) => {
+			setGames(games.data);
 			setOptions(
-				data.data.map(() => {
+				games.data.map(() => {
 					return false;
 				})
 			);
+			setLoading(false);
 		});
 	}, []);
 
 	useEffect(() => {
 		if (userId) {
-			axios.get("https://gamingdb-react.onrender.com/review/myReviews", { params: { userId: userId } }).then((userReviews) => {
+			getMyReviews(userId).then((userReviews) => {
 				setReviews(userReviews.data);
 			});
 		}
@@ -40,14 +43,14 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 
 	useEffect(() => {
 		if (userId) {
-			axios.get("https://gamingdb-react.onrender.com/list/myLists", { params: { userId: userId } }).then((lists) => {
+			getMyLists(userId).then((lists) => {
 				setUserLists(lists.data);
 			});
 		}
 	}, [userId]);
 
 	useEffect(() => {
-		axios.get("https://gamingdb-react.onrender.com/listGames/all").then((data) => {
+		getListGames().then((data) => {
 			setListGames(data.data);
 		});
 	}, []);
@@ -111,13 +114,14 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 			let alreadyInList = listGames.some((item) => item.List_Id === id && item.Game_Id === gameid.current);
 
 			if (!alreadyInList) {
-				axios.post("https://gamingdb-react.onrender.com/list/add", { listId: id, gameId: gameid.current }).then((result) => {});
-				toast.success("Added successfully", {
-					style: {
-						background: "#212529",
-						color: "white",
-						border: "1px solid gray",
-					},
+				addGame(id, gameid.current).then(() => {
+					toast.success("Added successfully", {
+						style: {
+							background: "#212529",
+							color: "white",
+							border: "1px solid gray",
+						},
+					});
 				});
 			} else {
 				toast("Game already in this list", {
@@ -164,19 +168,13 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 	});
 
 	return (
-		<div className="container">
+		<div className="container mb-4">
 			<div className="row text-center mt-2">
 				<h1 className="text-white">Games</h1>
 			</div>
-			{!games.length ? (
-				<div className="row w-75 m-auto justify-content-center position-absolute top-50 start-50 translate-middle">
-					<div className="spinner-border text-primary" role="status">
-						<span className="visually-hidden">Loading...</span>
-					</div>
-				</div>
-			) : null}
-
-			{games.length ? (
+			{loading ? (
+				isLoading()
+			) : (
 				<div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 w-75 m-auto row-gap-1">
 					{games.map((game, index) => {
 						return (
@@ -225,7 +223,7 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 						);
 					})}
 				</div>
-			) : null}
+			)}
 
 			{showListsForm ? (
 				<div
@@ -238,7 +236,7 @@ function Games({ getID, getGameImg, getBackground, getGameID }) {
 									<label className="text-white p-0 me-2 w-auto" htmlFor={"list" + i}>
 										{list.List_Name}
 									</label>
-									<input className="w-auto" type="checkbox" name={"list" + i} id="" onClick={() => addListId(list.List_Id)} />
+									<input className="w-auto " type="checkbox" name={"list" + i} id="" onClick={() => addListId(list.List_Id)} />
 								</div>
 							);
 						})}

@@ -4,7 +4,6 @@ import { QueryTypes } from "sequelize";
 
 export async function createList(req, res) {
 	const { listName, userId } = req.body;
-	console.log(req.body);
 	try {
 		const createdList = await List.create({ List_Name: listName, User_Id: userId });
 		res.status(200).json(createdList);

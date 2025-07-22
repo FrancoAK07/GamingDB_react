@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import toast from "react-hot-toast";
+import { createUser } from "../api/userApi.js";
 
 function RegisterForm({ registerActive, setRegisterActive, onClickOutside, setActive }) {
 	const visible =
@@ -44,11 +44,7 @@ function RegisterForm({ registerActive, setRegisterActive, onClickOutside, setAc
 
 	const handleRegister = async (userName, userEmail, userPassword) => {
 		try {
-			const registerData = await axios.post("https://gamingdb-react.onrender.com/user", {
-				userName: userName,
-				userEmail: userEmail,
-				userPassword: userPassword,
-			});
+			const registerData = await createUser(userName, userEmail, userPassword);
 			if (registerData.status === 200) {
 				setRegisterActive(false);
 				toast.success("registered successfully!", {

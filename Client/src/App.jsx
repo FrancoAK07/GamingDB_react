@@ -4,7 +4,7 @@ import "./dist/styles.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "./components/navbar";
 import LoginForm from "./components/loginForm";
-import Home from "./pages/home/home";
+import Home from "./pages/home";
 import CreateReview from "./pages/createReview";
 import RegisterForm from "./components/registerForm";
 import UserNavbar from "./components/userNavbar";
@@ -24,7 +24,7 @@ function App() {
 	const [gameImg1, setGameImg1] = useState(null);
 	const [background1, setBackground] = useState(null);
 	const [gameID, setGameID] = useState(null);
-	const [userId, setUserId] = useState(sessionStorage.getItem("userId") ? sessionStorage.getItem("userId") : null);
+	// const [userId, setUserId] = useState(sessionStorage.getItem("userId") ? sessionStorage.getItem("userId") : null);
 
 	function userName(name) {
 		setUser(name);
@@ -46,9 +46,9 @@ function App() {
 		setGameID(ID);
 	}
 
-	function getUserId(userId) {
-		setUserId(userId);
-	}
+	// function getUserId(userId) {
+	// 	setUserId(userId);
+	// }
 
 	return (
 		<div className="App min-vh-100">
@@ -72,7 +72,7 @@ function App() {
 					active={active}
 					setActive={setActive}
 					setRegisterActive={setRegisterActive}
-					getUserId={getUserId}
+					// getUserId={getUserId}
 					onClickOutside={() => {
 						setActive(false);
 					}}

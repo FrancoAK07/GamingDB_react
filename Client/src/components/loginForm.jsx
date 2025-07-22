@@ -1,9 +1,9 @@
 import React, { useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import toast from "react-hot-toast";
+import { loginUser } from "../api";
 
-function LoginForm({ active, setActive, onClickOutside, setUserLogged, setRegisterActive, userName, getUserId }) {
+function LoginForm({ active, setActive, onClickOutside, setUserLogged, setRegisterActive, userName }) {
 	const visible =
 		"col-9 col-sm-7 col-md-5 col-lg-3 p-2 login-form bg-dark position-absolute top-50 start-50 translate-middle rounded border border-light";
 	const invisible = "login-form-invisible form-control w-25 bg-dark position-absolute";
@@ -41,20 +41,17 @@ function LoginForm({ active, setActive, onClickOutside, setUserLogged, setRegist
 
 	const handleLogin = async (userEmail, userPassword) => {
 		try {
-			const loginData = await axios.post("https://gamingdb-react.onrender.com/user/login", {
-				userEmail: userEmail,
-				userPassword: userPassword,
-			});
+			const loginData = await loginUser(userEmail, userPassword);
 			const userId = loginData.data.userId;
 			const user = loginData.data.userName;
-			if (userId && user) {
+			if (loginData.data) {
 				sessionStorage.setItem("userId", userId);
 				userName(user);
-				getUserId(userId);
 				setUserLogged(true);
 				setActive(false);
 				sessionStorage.setItem("logged", true);
 				sessionStorage.setItem("user", user);
+				sessionStorage.setItem("userId", userId);
 				toast.success(`Logged in successfully!\n Hi ${user}!`, {
 					style: { background: "#212529", color: "white", border: "1px solid gray" },
 				});
@@ -65,7 +62,8 @@ function LoginForm({ active, setActive, onClickOutside, setUserLogged, setRegist
 			}
 		} catch (error) {
 			console.error("Error:", error);
-			const errorMessage = error.response ? error.response.data : "Network error. Please try again.";
+			const errorMessage =
+				error.response.status === 400 || error.response.status === 401 ? error.response.data : "Network error. Please try again.";
 			toast.error(errorMessage, { style: { background: "#212529", color: "white", border: "1px solid gray" } });
 		}
 	};
