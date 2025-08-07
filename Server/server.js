@@ -23,8 +23,6 @@ app.use(
 app.use(express.json({ limit: "5mb" }));
 app.use("/", routes); // Add this line to use routes
 
-console.log(sequelize);
-
 // Test the connection
 sequelize
 	.authenticate()
