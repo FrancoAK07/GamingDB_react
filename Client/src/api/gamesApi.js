@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiUrl = "https://gamingdb-react.onrender.com/game";
+const apiUrl = `${process.env.REACT_APP_API_URL}/game`;
 
 export const getAllGames = async () => {
 	try {

@@ -102,9 +102,9 @@ function LoginForm({ active, setActive, onClickOutside, setUserLogged, setRegist
 					</button>
 				</div>
 				<div className="row w-100 m-auto justify-content-center text-white">
-					<p className=" col-12">Demo account:</p>
-					<p className=" col-12">Email: usuario@email.com</p>
-					<p className=" col-12">Password: 123456</p>
+					<p className="col-12 m-0">Demo account:</p>
+					<p className="col-12 m-0">Email: test@gmail.com</p>
+					<p className="col-12 m-0">Password: 12345</p>
 				</div>
 				<p className="text-white text-center m-0 p-1">
 					Don't have an account? Register here

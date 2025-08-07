@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiUrl = "https://gamingdb-react.onrender.com/comment";
+const apiUrl = `${process.env.REACT_APP_API_URL}/comment`;
 
 export const getComments = async () => {
 	const comments = await axios.get(`${apiUrl}`);

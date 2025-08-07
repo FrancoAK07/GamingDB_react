@@ -37,31 +37,30 @@ function RegisterForm({ registerActive, setRegisterActive, onClickOutside, setAc
 			toast.error("Please enter your account info", {
 				style: { background: "#212529", color: "white", border: "1px solid gray" },
 			});
+		} else if (!email.includes("@") || !email.includes(".com")) {
+			toast.error("Please enter a valid email", {
+				style: { background: "#212529", color: "white", border: "1px solid gray" },
+			});
 		} else {
 			await handleRegister(name, email, password);
 		}
 	};
 
 	const handleRegister = async (userName, userEmail, userPassword) => {
-		try {
-			const registerData = await createUser(userName, userEmail, userPassword);
-			if (registerData.status === 200) {
-				setRegisterActive(false);
-				toast.success("registered successfully!", {
-					style: { background: "#212529", color: "white", border: "1px solid gray" },
-				});
-				registerNameInput.current.value = "";
-				registerEmailInput.current.value = "";
-				registerPasswordInput.current.value = "";
-			} else {
-				toast.error("Error, try again", {
-					style: { background: "#212529", color: "white", border: "1px solid gray" },
-				});
-			}
-		} catch (error) {
-			console.error("Error:", error);
-			const errorMessage = error.response ? error.response.data : "Network error. Please try again.";
-			toast.error(errorMessage, { style: { background: "#212529", color: "white", border: "1px solid gray" } });
+		const registerData = await createUser(userName, userEmail, userPassword);
+		if (registerData.status === 200) {
+			setRegisterActive(false);
+			toast.success("registered successfully!", {
+				style: { background: "#212529", color: "white", border: "1px solid gray" },
+			});
+			registerNameInput.current.value = "";
+			registerEmailInput.current.value = "";
+			registerPasswordInput.current.value = "";
+		} else {
+			console.error(registerData);
+			toast.error(registerData.message, {
+				style: { background: "#212529", color: "white", border: "1px solid gray" },
+			});
 		}
 	};
 
@@ -108,7 +107,7 @@ function RegisterForm({ registerActive, setRegisterActive, onClickOutside, setAc
 				<input
 					className="form-control"
 					name="password"
-					type="text"
+					type="password"
 					id="register-password-input"
 					placeholder="Enter Password"
 					ref={registerPasswordInput}

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiUrl = "https://gamingdb-react.onrender.com/review";
+const apiUrl = `${process.env.REACT_APP_API_URL}/review`;
 
 export const getLastReviews = async () => {
 	const lastReviews = await axios.get(`${apiUrl}/recent`);

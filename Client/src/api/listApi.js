@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const apiUrl = "https://gamingdb-react.onrender.com/list";
+const apiUrl = `${process.env.REACT_APP_API_URL}/list`;
 
 export const getMyLists = async (userId) => {
 	const myLists = await axios.get(`${apiUrl}/myLists`, { params: { userId: userId } });
